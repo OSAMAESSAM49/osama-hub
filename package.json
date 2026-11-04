@@ -1,0 +1,45 @@
+{
+  "name": "osama-hub",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/fonts.mjs build && vite",
+    "build": "node scripts/fonts.mjs build && tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "fonts:pack": "node scripts/fonts.mjs pack",
+    "data:deen": "node scripts/fetch-deen-data.mjs",
+    "emulators": "firebase emulators:start --only auth,firestore,storage --project demo-osama-hub",
+    "test:rules": "firebase emulators:exec --only firestore,storage --project demo-osama-hub \"vitest run --config vitest.rules.config.ts\""
+  },
+  "dependencies": {
+    "@fontsource/amiri-quran": "^5.3.0",
+    "@tiptap/pm": "^3.32.2",
+    "@tiptap/react": "^3.32.2",
+    "@tiptap/starter-kit": "^3.32.2",
+    "firebase": "^13.2.0",
+    "idb": "^8.0.4",
+    "lucide-react": "^1.68.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5",
+    "recharts": "^3.10.1"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "@tailwindcss/vite": "^4.3.4",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "fake-indexeddb": "^6.2.7",
+    "tailwindcss": "^4.3.4",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0",
+    "workbox-window": "^7.4.1"
+  }
+}

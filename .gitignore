@@ -1,0 +1,23 @@
+node_modules
+dist
+dev-dist
+*.local
+.env
+.env.*
+!.env.example
+.firebase
+*-debug.log
+firebase-debug.*
+ui-debug.log
+
+# Thmanyah font licence: font files must never be published or made downloadable.
+Thmanyah-Font-Family.zip
+fonts-src/
+src/generated/
+.font-pack-key
+
+# Design references are private inputs, not part of the product.
+reference/
+
+# Local editor and preview configuration.
+.claude/

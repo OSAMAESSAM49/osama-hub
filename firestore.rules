@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Every synced record has this envelope. serverUpdatedAt must be the commit time, which
+    // keeps the delta-sync cursor honest, and the id must match the document path.
+    function validEnvelope(docId) {
+      let d = request.resource.data;
+      return d.id == docId
+        && d.createdAt is string && d.createdAt.size() <= 40
+        && d.updatedAt is string && d.updatedAt.size() <= 40
+        && d.serverUpdatedAt == request.time;
+    }
+
+    function isTombstone() {
+      return request.resource.data.get('deletedAt', null) is string;
+    }
+
+    function validDate(v) {
+      return v is string && v.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    // Money is always a positive whole number of piastres.
+    function validMoney() {
+      let d = request.resource.data;
+      return d.amountMinor is int && d.amountMinor > 0 && d.amountMinor <= 100000000000 && validDate(d.date);
+    }
+
+    match /users/{uid} {
+      allow read, write: if false;
+
+      match /income/{docId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validEnvelope(docId) && (isTombstone() || validMoney());
+      }
+      match /expenses/{docId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validEnvelope(docId) && (isTombstone() || validMoney());
+      }
+      match /partnerPayments/{docId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validEnvelope(docId) && (isTombstone() || validMoney());
+      }
+
+      match /{collection}/{docId} {
+        allow read: if isOwner(uid) && isKnownCollection(collection);
+        allow create, update: if isOwner(uid) && isKnownCollection(collection) && validEnvelope(docId);
+      }
+
+      // Records are removed with a tombstone so other devices learn about the removal.
+      // Hard deletes are not allowed from the client.
+    }
+
+    function isKnownCollection(name) {
+      return name in [
+        'settings', 'notes', 'contentIdeas', 'vaultItems', 'tasks', 'voiceNotes',
+        'bookmarks', 'bookmarkCollections', 'favoriteVerses', 'favoriteHadith', 'deenHistory',
+        'deenTracking', 'lifeDomains', 'lifeVision', 'lifeGoals', 'lifeMilestones',
+        'lifeReviews', 'lifeJournal'
+      ];
+    }
+  }
+}
