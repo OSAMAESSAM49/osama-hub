@@ -3,7 +3,8 @@
 Status of the build as handed over.
 
 - **Tested** means it was run: automated tests, or driven in a real browser.
-- **Not run** means the code and tests exist, but they have not been executed. Please do these before relying on the feature.
+- **Live** means it was checked on the deployed site against the real Firebase project.
+- **Not run** means it has not been executed yet.
 
 ## Run the tests
 
@@ -21,20 +22,30 @@ Security rules tests. **Needs Java 11+** for the Firebase emulators.
 
 To try the app against the local Auth emulator (no real project involved), use the `.env.emulator` values shown in [the section below](#try-it-against-the-emulators).
 
-## Not run yet: please do these
+## Verified live (5 Nov 2026)
 
-These need things that were not available when this was built.
+On https://osamaessam49.github.io/osama-hub/, project `osama-hub-eg`, using the owner account:
 
-| Item | Why it was not run | How to run it |
+- [x] GitHub Actions: tests pass, the build succeeds, and the site deploys
+- [x] Firebase config and Thmanyah fonts present in the deployed build
+- [x] A note and an income record reach Firestore, marked synced only after confirmation, with an empty queue
+- [x] Money stored as an integer (1.50 EGP is `150`)
+- [x] Simulated second device: a record removed locally comes back from the cloud
+- [x] Deletes reach Firestore as tombstones
+- [x] Live rules refuse (403): signed-out reads and writes, another user's reads and writes, unknown collections, the user root document, writes with no server timestamp, hard deletes, and float, negative, zero, text or badly dated money
+- [x] Live rules allow the owner's own data
+- [x] New sign-ups disabled, with one account in the project
+
+## Not run yet
+
+| Item | Why | How to run it |
 | --- | --- | --- |
-| **Security rules tests** ([tests/rules.test.ts](../tests/rules.test.ts)) | The machine has Java 8; the Firestore and Storage emulators need 11+ | Install Java 11+, then `npm run test:rules` |
-| **Sync against real Firestore** | No Firebase project was connected. The engine was tested against an in-memory fake | Set up Firebase, add a record on one device, and check it arrives on another |
-| **Data isolation with two real accounts** | Covered by the rules tests above | Sign in as a second user and confirm the first user's data is absent |
-| **GitHub Actions and Pages deployment** | Not pushed to GitHub. The build was tested locally at a `/osama-hub/` subpath | Follow the README |
-| **Real iPhone and Android devices** | Tested with phone-size emulation in Chromium only | Install the PWA, record with the real microphone, and check Safari in particular |
-| **Real microphone and permission denial** | A synthetic audio stream was used to avoid a permission prompt | Record on your devices, and deny permission once to see the message |
-| **Cloud Storage upload and retry** | Needs the Blaze plan | Only if you opt in |
-| **Password reset email delivery** | The UI and sending call exist, but delivery was not exercised | Use "Forgot your password?" once Firebase is set up |
+| **Full rules test suite** ([tests/rules.test.ts](../tests/rules.test.ts)) | This machine has Java 8; the emulators need 11+. The live checks above cover most of its Firestore cases | Install Java 11+, then `npm run test:rules` |
+| **A physical second device** | Simulated above | Install on your phone and check that data arrives |
+| **Real iPhone and Android devices** | Only phone-size emulation in Chromium so far | Install the PWA, and check Safari in particular |
+| **Real microphone and permission denial** | A synthetic audio stream was used | Record on your devices, and deny permission once |
+| **Cloud Storage upload and retry** | Needs the Blaze plan; storage rules are not deployed | Only if you opt in |
+| **Password reset email delivery** | Not exercised | Use "Forgot your password?" once |
 | **Religious content review** | Automated cross-checks cannot replace a person | Have someone qualified spot-check the Deen content |
 
 ## Tested

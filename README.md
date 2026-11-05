@@ -14,6 +14,8 @@ A private, all-in-one personal operating system: dental clinic finance, notes, t
 - [Daily Deen data](#daily-deen-data)
 - [Limitations](#limitations)
 
+**Live site:** https://osamaessam49.github.io/osama-hub/ (Firebase project `osama-hub-eg`, Firestore in `europe-west1`). New sign-ups are disabled, so only the owner account can use it.
+
 More detail: [architecture](docs/ARCHITECTURE.md) and [testing checklist](docs/TESTING.md).
 
 ## Run it locally
@@ -25,6 +27,8 @@ npm install
 ```bash
 npm run dev
 ```
+
+**A `.env.local` file connects local development to the real project,** so anything you do there changes your real data. Rename it to test in local mode.
 
 With no Firebase configuration, the app runs in **local mode**: everything works and stays in this browser, and the sync pill says "On this device". Add Firebase when you want an account and sync.
 
