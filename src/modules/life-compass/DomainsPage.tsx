@@ -78,11 +78,11 @@ export default function DomainsPage() {
         subtitle={tr('الأركان التي تبني عليها حياتك.', 'The pillars your life is built on.')}
         actions={<Button variant="primary" icon={Plus} capsule onClick={() => setForm({})}>{tr('مجال', 'Domain')}</Button>}
       />
-      <div className="grid gap-3 lg:grid-cols-2">{active.map(row)}</div>
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">{active.map(row)}</div>
       {archived.length > 0 && (
         <details className="mt-6">
           <summary className="min-h-10 py-2 font-medium text-muted">{tr(`المؤرشفة (${archived.length})`, `Archived (${archived.length})`)}</summary>
-          <div className="mt-2 grid gap-3 lg:grid-cols-2">{archived.map(row)}</div>
+          <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2">{archived.map(row)}</div>
         </details>
       )}
       {form && <DomainForm key={form.domain?.id ?? 'new'} domain={form.domain} nextOrder={items.length} onClose={() => setForm(null)} />}

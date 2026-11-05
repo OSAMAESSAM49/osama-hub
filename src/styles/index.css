@@ -91,6 +91,8 @@
     line-height: 1.6;
     font-feature-settings: 'tnum' 0;
     overflow-x: hidden;
+    /* A long URL or word wraps instead of pushing its card past the screen edge. */
+    overflow-wrap: break-word;
     -webkit-font-smoothing: antialiased;
   }
   h1,

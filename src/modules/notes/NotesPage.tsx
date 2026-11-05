@@ -115,7 +115,7 @@ function NoteEditor({ noteId, onClose, categories, allTags }: { noteId: string; 
       <Suspense fallback={<div className="skeleton h-48" />}>
         <RichText value={draft.content} onChange={(content, plain) => change({ content, plain })} placeholder={tr('ابدأ الكتابة…', 'Start writing…')} />
       </Suspense>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <ComboInput label={tr('التصنيف', 'Category')} value={draft.category} onChange={(category) => change({ category })} suggestions={categories} />
         <TagInput value={draft.tags} onChange={(tags) => change({ tags })} suggestions={allTags} />
       </div>

@@ -94,7 +94,7 @@ export function GoalForm({ goal, parentId, horizon: initialHorizon, domainId, on
           options={[{ value: '', label: tr('هدف مستقل', 'Independent goal') }, ...parentOptions.map((g) => ({ value: g.id, label: `${g.title} · ${horizonLabel(g.horizon)}` }))]}
         />
         <Textarea label={tr('لماذا يهمك هذا؟', 'Why does this matter?')} value={why} onChange={(e) => setWhy(e.target.value)} rows={2} />
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Textarea label={tr('النتيجة المتوقعة', 'Expected outcome')} value={expectedOutcome} onChange={(e) => setOutcome(e.target.value)} rows={2} />
           <Textarea label={tr('كيف ستقيس النجاح؟', 'How will you measure it?')} value={measurement} onChange={(e) => setMeasurement(e.target.value)} rows={2} />
         </div>

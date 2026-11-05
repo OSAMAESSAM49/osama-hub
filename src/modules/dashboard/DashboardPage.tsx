@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check, Compass, Lightbulb, Link2, ListChecks, Mic, NotebookPen, SlidersHorizontal, Stethoscope, Target } from 'lucide-react'
-import { Button, cx, IconButton, ProgressBar, Sheet, Toggle } from '@/components/common/ui'
+import { Button, cardNumberClass, cx, heroNumberClass, IconButton, ProgressBar, Sheet, Toggle } from '@/components/common/ui'
 import { QuickActionGrid } from '@/components/layout/QuickAdd'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSettings } from '@/hooks/useSettings'
@@ -82,16 +82,16 @@ function FinanceHero() {
         <p className="text-[15px] font-medium opacity-70">{tr('صافي هذا الشهر', "This month's net")}</p>
         <span className="grid size-11 place-items-center rounded-full bg-charcoal/10"><Stethoscope className="size-5" /></span>
       </div>
-      <p className="tnum mt-4 text-[3.2rem] leading-none font-bold sm:text-7xl" dir="ltr" style={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>{formatMoney(month.net, 'en', false)}</p>
+      <p className={cx('tnum mt-4 leading-none font-bold', heroNumberClass(formatMoney(month.net, 'en', false)))} dir="ltr" style={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>{formatMoney(month.net, 'en', false)}</p>
       <p className="mt-1 text-sm opacity-70">{tr('جنيه مصري، بعد المصروفات وحصة الشريك', 'EGP, after expenses and partner share')}</p>
-      <div className="mt-6 grid grid-cols-2 gap-3">
+      <div className="mt-6 grid grid-cols-1 gap-3 min-[340px]:grid-cols-2">
         <div className="rounded-3xl bg-charcoal px-4 py-3 text-white">
           <div className="text-sm opacity-70">{tr('إيراد اليوم', "Today's income")}</div>
-          <div className="tnum text-xl font-bold">{formatMoney(day.income, lang, false)}</div>
+          <div className={cx('tnum font-bold', cardNumberClass(formatMoney(day.income, lang, false)))}>{formatMoney(day.income, lang, false)}</div>
         </div>
         <div className="rounded-3xl bg-white/55 px-4 py-3">
           <div className="text-sm opacity-70">{tr('مصروف اليوم', "Today's expenses")}</div>
-          <div className="tnum text-xl font-bold">{formatMoney(day.expenses, lang, false)}</div>
+          <div className={cx('tnum font-bold', cardNumberClass(formatMoney(day.expenses, lang, false)))}>{formatMoney(day.expenses, lang, false)}</div>
         </div>
       </div>
     </Link>
@@ -297,7 +297,7 @@ function CompassWidget() {
       {goals.length === 0 ? (
         <Empty>{tr('أين تريد أن تكون حياتك في 2036؟ ابدأ من الرؤية.', 'Where do you want your life to be in 2036? Start from the vision.')}</Empty>
       ) : (
-        <ul className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
           {rows.map(({ d, value, count }) => (
             <li key={d.id}>
               <div className="mb-1 flex items-center justify-between gap-2 text-sm">
@@ -371,8 +371,8 @@ export default function DashboardPage() {
   return (
     <div className="fade-in">
       <Greeting />
-      <div className="grid gap-3 lg:grid-cols-4">
-        {order.map((w) => <div key={w} className="contents">{WIDGETS[w].wide ? WIDGETS[w].render() : <div className="grid lg:col-span-2">{WIDGETS[w].render()}</div>}</div>)}
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-4">
+        {order.map((w) => <div key={w} className="contents">{WIDGETS[w].wide ? WIDGETS[w].render() : <div className="grid min-w-0 grid-cols-1 lg:col-span-2">{WIDGETS[w].render()}</div>}</div>)}
       </div>
       <section className="card mt-3 p-4 lg:hidden" aria-label={tr('إجراءات سريعة', 'Quick actions')}>
         <QuickActionGrid />

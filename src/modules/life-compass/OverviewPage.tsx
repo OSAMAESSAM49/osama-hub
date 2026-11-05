@@ -54,7 +54,7 @@ export default function OverviewPage() {
 
       <section>
         <SectionTitle action={<Link to="/compass/domains" className="text-sm text-accent">{tr('إدارة المجالات', 'Manage domains')}</Link>}>{tr('ميزان الحياة', 'Life balance')}</SectionTitle>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map(({ domain: d, active: a, completed, overdue, progress, hasGoals }) => (
             <article key={d.id} className="card p-5">
               <div className="flex items-center gap-3">
@@ -101,7 +101,7 @@ export default function OverviewPage() {
         <p className="mt-2 px-1 text-xs text-faint">{tr('الرضا تقدير شخصي منفصل تمامًا عن الإنجاز، ولا يُحسب من المهام أو الأهداف.', 'Satisfaction is a personal rating, fully separate from achievement. It is never calculated from tasks or goals.')}</p>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className="card p-5">
           <SectionTitle>{tr('المعالم القادمة', 'Upcoming milestones')}</SectionTitle>
           {upcoming.length === 0 ? <p className="text-[15px] text-faint">{tr('لا معالم بمواعيد قريبة.', 'No milestones with upcoming dates.')}</p> : (

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { ArrowDownCircle, ArrowUpCircle, Banknote, Download, FileSpreadsheet, HandCoins, Plus, Receipt, Search, Wallet } from 'lucide-react'
 import { confirmDelete, toast } from '@/components/common/feedback'
 import {
-  Button, Chip, ChipRow, ComboInput, cx, EmptyState, FormFooter, Input, ListSkeleton, PageHeader, ProgressBar, SectionTitle, Segmented, Select, Sheet, Stat, SyncBadge, Textarea,
+  Button, Chip, ChipRow, ComboInput, cx, EmptyState, heroNumberClass, FormFooter, Input, ListSkeleton, PageHeader, ProgressBar, SectionTitle, Segmented, Select, Sheet, Stat, SyncBadge, Textarea,
 } from '@/components/common/ui'
 import { useParamOnce } from '@/hooks/useParamOnce'
 import { useSettings } from '@/hooks/useSettings'
@@ -126,7 +126,7 @@ function TransactionForm({ kind, record, onClose }: { kind: Kind; record?: Store
         <Select label={tr('التصنيف', 'Category')} value={categoryId} onChange={(e) => setCategoryId(e.target.value)} options={cats.map((c) => ({ value: c.id, label: lang === 'ar' ? c.ar : c.en }))} />
         {kind === 'income' ? (
           <>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <ComboInput label={tr('الإجراء', 'Procedure')} value={procedure} onChange={setProcedure} suggestions={incomes.map((i) => i.procedure).filter(Boolean)} />
               <ComboInput label={tr('اسم المريض (اختياري)', 'Patient name (optional)')} value={patientName} onChange={setPatientName} suggestions={incomes.map((i) => i.patientName).filter(Boolean)} />
             </div>
@@ -260,11 +260,11 @@ function Overview({ incomes, expenses, payments, onAdd, onPartner }: {
   return (
     <div className="space-y-4">
       <PeriodPicker p={period} />
-      <div className="grid gap-3 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-5">
         {/* Hero: the one number that matters, in the references' lime card */}
         <section className="relative overflow-hidden rounded-[2.25rem] bg-lime p-6 text-charcoal lg:col-span-3">
           <p className="text-[15px] font-medium opacity-70">{tr('صافي النتيجة', 'Net result')}</p>
-          <p className="tnum mt-2 text-[2.9rem] leading-none font-bold sm:text-6xl" dir="ltr" style={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>
+          <p className={cx('tnum mt-2 leading-none font-bold', heroNumberClass(formatMoney(s.net, 'en', false)))} dir="ltr" style={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>
             {formatMoney(s.net, 'en', false)}
           </p>
           <p className="mt-1 text-sm opacity-70">{tr('جنيه مصري', 'Egyptian pounds')} · {formatDate(range.from, lang, 'dmy')} – {formatDate(range.to, lang, 'dmy')}</p>
@@ -283,8 +283,8 @@ function Overview({ incomes, expenses, payments, onAdd, onPartner }: {
           ].map((row) => (
             <div key={row.label}>
               <div className="mb-1.5 flex items-baseline justify-between gap-3">
-                <span className="text-sm text-muted">{row.label}</span>
-                <span className="tnum text-lg font-bold whitespace-nowrap">{m(row.value)}</span>
+                <span className="min-w-0 text-sm text-muted">{row.label}</span>
+                <span className="tnum shrink-0 text-lg font-bold whitespace-nowrap">{m(row.value)}</span>
               </div>
               <ProgressBar value={(row.value / base) * 100} tone={row.tone} label={row.label} />
             </div>
@@ -442,12 +442,12 @@ function PartnerTab({ incomes, payments, onPay, onEditPayment }: { incomes: Stor
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-[15px] opacity-80">{bal.balance >= 0 ? tr('المتبقي للشريك', 'Remaining for partner') : tr('مدفوع زائد للشريك', 'Partner overpaid')}{settings.partnerName ? ` · ${settings.partnerName}` : ''}</p>
-            <p className="tnum mt-2 text-[2.9rem] leading-none font-bold sm:text-6xl">{formatMoney(Math.abs(bal.balance), 'en', false)}</p>
+            <p className={cx('tnum mt-2 leading-none font-bold', heroNumberClass(formatMoney(Math.abs(bal.balance), 'en', false)))}>{formatMoney(Math.abs(bal.balance), 'en', false)}</p>
             <p className="mt-1 text-sm opacity-80">{tr('جنيه مصري', 'Egyptian pounds')}</p>
           </div>
           <Button variant="primary" icon={Plus} capsule onClick={onPay}>{tr('تسجيل دفعة', 'Record payment')}</Button>
         </div>
-        <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+        <div className="mt-5 grid grid-cols-1 gap-3 text-sm min-[360px]:grid-cols-2">
           <div><div className="opacity-80">{tr('إجمالي الحصة', 'Total share')}</div><div className="tnum text-lg font-bold">{m(bal.owed)}</div></div>
           <div><div className="opacity-80">{tr('إجمالي المدفوع', 'Total paid')}</div><div className="tnum text-lg font-bold">{m(bal.paid)}</div></div>
         </div>
@@ -553,7 +553,7 @@ function Reports({ incomes, expenses, payments }: { incomes: Stored<Income>[]; e
         <h3 className="mt-6 mb-1 text-sm font-medium text-muted">{tr('اتجاه صافي النتيجة', 'Net result trend')}</h3>
         <Suspense fallback={<div className="skeleton h-48" />}><FinanceCharts.Net data={trend} /></Suspense>
       </section>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <CategoryBars title={tr('الإيرادات حسب التصنيف', 'Income by category')} rows={categoryTotals(inc, settings.incomeCategories)} lang={lang} />
         <CategoryBars title={tr('المصروفات حسب التصنيف', 'Expenses by category')} rows={categoryTotals(exp, settings.expenseCategories)} lang={lang} />
       </div>

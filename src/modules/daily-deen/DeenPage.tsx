@@ -104,7 +104,7 @@ export function HadithCard({ hadith, favorite, onFavorite }: { hadith: Hadith; f
       </div>
       <p lang="ar" dir="rtl" className="mt-3 font-reading text-[1.15rem] leading-[2.1]">{hadith.text}</p>
       <Ornament />
-      <dl className="grid gap-x-6 gap-y-2 text-[15px] sm:grid-cols-2">
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-2 text-[15px] sm:grid-cols-2">
         <div><dt className="text-sm text-forest/70">{tr('الكتاب', 'Book')}</dt><dd className="font-medium">{bookName(hadith.book, lang)}</dd></div>
         {hadith.chapter && <div><dt className="text-sm text-forest/70">{tr('الباب', 'Chapter')}</dt><dd className="font-medium" dir="auto">{lang === 'ar' ? hadith.chapter : hadith.chapterEn ?? hadith.chapter}</dd></div>}
         <div><dt className="text-sm text-forest/70">{tr('رقم الحديث', 'Hadith number')}</dt><dd className="tnum font-medium">{hadith.number}</dd></div>

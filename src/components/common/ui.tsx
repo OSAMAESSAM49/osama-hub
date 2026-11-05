@@ -325,7 +325,7 @@ export function PageHeader({ title, subtitle, actions, back }: { title: string; 
 
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mb-3 flex items-center justify-between gap-2">
+    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
       <h2 className="text-lg font-bold">{children}</h2>
       {action}
     </div>
@@ -472,11 +472,22 @@ export function FormFooter({ onCancel, saveLabel, busy, onDelete, deleteLabel }:
   )
 }
 
+/** Large figures shrink with their length and the screen, so a money amount is never cut off. */
+export function heroNumberClass(text: string) {
+  if (text.length <= 9) return 'text-[min(3.2rem,13vw)] sm:text-7xl'
+  if (text.length <= 12) return 'text-[min(2.6rem,10vw)] sm:text-6xl'
+  return 'text-[min(2rem,7.5vw)] sm:text-5xl'
+}
+
+export function cardNumberClass(text: string) {
+  return text.length <= 9 ? 'text-[min(1.25rem,5vw)]' : 'text-[min(1.05rem,4vw)]'
+}
+
 export function Stat({ label, value, tone, sub }: { label: string; value: string; tone?: 'good' | 'bad'; sub?: string }) {
   return (
     <div className="min-w-0">
       <div className="text-sm text-muted">{label}</div>
-      <div className={cx('tnum truncate text-xl font-bold', tone === 'good' && 'text-positive', tone === 'bad' && 'text-negative')}>{value}</div>
+      <div className={cx('tnum text-[min(1.25rem,4.8vw)] font-bold', tone === 'good' && 'text-positive', tone === 'bad' && 'text-negative')}>{value}</div>
       {sub && <div className="text-xs text-faint">{sub}</div>}
     </div>
   )

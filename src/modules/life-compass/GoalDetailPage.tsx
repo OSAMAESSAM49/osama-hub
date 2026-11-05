@@ -228,7 +228,7 @@ export default function GoalDetailPage() {
         </div>
         {(goal.status === 'cancelled' || goal.status === 'onHold') && <p className="mt-2 text-sm text-muted">{tr('تغيير الأهداف جزء طبيعي من الحياة. يمكنك العودة إليه متى شئت.', 'Changing goals is a natural part of life. You can come back to it whenever you like.')}</p>}
         {isGoalOverdue(goal) && <p className="mt-2 text-sm text-caution">{tr('تجاوز موعده المستهدف. يمكنك تعديل الموعد إن تغيّرت الظروف.', 'It has passed its target date. Move the date if circumstances changed.')}</p>}
-        <dl className="mt-4 grid gap-3 border-t border-line pt-4 text-[15px] sm:grid-cols-3">
+        <dl className="mt-4 grid grid-cols-1 gap-3 border-t border-line pt-4 text-[15px] sm:grid-cols-3">
           {goal.startDate && <div><dt className="text-sm text-muted">{tr('البدء', 'Start')}</dt><dd>{fmt(goal.startDate)}</dd></div>}
           {goal.targetDate && <div><dt className="text-sm text-muted">{tr('المستهدف', 'Target')}</dt><dd>{fmt(goal.targetDate)}</dd></div>}
           {goal.completedAt && <div><dt className="text-sm text-muted">{tr('أُنجز في', 'Completed')}</dt><dd>{fmt(goal.completedAt)}</dd></div>}
@@ -272,7 +272,7 @@ export default function GoalDetailPage() {
       <section className="card p-5">
         <SectionTitle
           action={
-            <div className="flex gap-1.5">
+            <div className="flex flex-wrap gap-1.5">
               <Button size="sm" variant="ghost" onClick={() => setLinkTaskOpen(true)}>{tr('ربط مهمة', 'Link task')}</Button>
               <Button size="sm" icon={Plus} onClick={async () => {
                 const res = await goalToTask(goal)

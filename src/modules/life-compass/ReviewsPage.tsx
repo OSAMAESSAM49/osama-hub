@@ -111,7 +111,7 @@ export default function ReviewsPage() {
   return (
     <div>
       <PageHeader title={tr('المراجعات', 'Reviews')} subtitle={tr('وقفة صادقة مع النفس، على وتيرتك أنت.', 'An honest pause, at your own pace.')} />
-      <div className="mb-4 grid gap-2 sm:grid-cols-3">
+      <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
         {(['weekly', 'monthly', 'annual'] as ReviewType[]).map((t) => (
           <button key={t} type="button" onClick={() => setForm({ type: t })} className="card flex min-h-20 items-center justify-between gap-2 p-4 text-start font-bold transition hover:bg-raised">
             {reviewTypeLabel(t)}

@@ -135,7 +135,7 @@ export default function GoalsPage() {
           {timeline.map(([year, goals]) => (
             <section key={year}>
               <h2 className="mb-2 flex items-center gap-2 font-display text-2xl font-bold"><span className="tnum">{year}</span> {year === todayStr().slice(0, 4) && <Tag tone="accent">{tr('هذه السنة', 'This year')}</Tag>}</h2>
-              <div className="grid gap-2 sm:grid-cols-2">{goals.map((g) => <GoalRow key={g.id} goal={g} milestones={milestones} childCount={items.filter((c) => c.parentId === g.id).length} lang={lang} dateFmt={settings.dateFormat} />)}</div>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{goals.map((g) => <GoalRow key={g.id} goal={g} milestones={milestones} childCount={items.filter((c) => c.parentId === g.id).length} lang={lang} dateFmt={settings.dateFormat} />)}</div>
             </section>
           ))}
         </div>

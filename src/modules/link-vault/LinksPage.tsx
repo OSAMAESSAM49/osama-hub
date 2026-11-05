@@ -260,7 +260,7 @@ export default function LinksPage() {
           action={!q && !collection ? <Button variant="primary" icon={Plus} onClick={() => setForm({})}>{tr('حفظ رابط', 'Save a link')}</Button> : undefined}
         />
       ) : view === 'cards' ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((b) => (
             <article key={b.id} className="card flex flex-col p-4">
               <div className="flex items-start gap-3">

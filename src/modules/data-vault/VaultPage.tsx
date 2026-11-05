@@ -52,7 +52,7 @@ function VaultForm({ item, categories, tags: allTags, onClose }: { item?: Stored
             {tr('هذه الخزنة ليست لكلمات المرور أو البيانات البنكية أو رموز الدخول. استخدم مدير كلمات مرور لها.', 'This vault is not for passwords, banking details or login codes. Use a password manager for those.')}
           </p>
         )}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <ComboInput label={tr('التصنيف', 'Category')} value={category} onChange={setCategory} suggestions={[tr('موردون', 'Suppliers'), tr('أرقام مهمة', 'Important numbers'), tr('العيادة', 'Clinic'), tr('إداري', 'Administrative'), tr('نصوص جاهزة', 'Saved text'), ...categories]} />
           <Input label={tr('رابط (اختياري)', 'URL (optional)')} value={url} onChange={(e) => setUrl(e.target.value)} error={errors.url} dir="ltr" inputMode="url" />
         </div>
@@ -115,7 +115,7 @@ export default function VaultPage() {
           action={!q && !archived ? <Button variant="primary" icon={Plus} onClick={() => setForm({})}>{tr('أضف عنصرًا', 'Add an item')}</Button> : undefined}
         />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {shown.map((i) => (
             <article key={i.id} className="card flex flex-col p-4">
               <button type="button" className="min-w-0 flex-1 text-start" onClick={() => setForm({ item: i })}>
