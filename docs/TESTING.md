@@ -12,7 +12,7 @@ Status of the build as handed over.
 npm test
 ```
 
-Runs 66 tests: finance, dates, search, CSV, the sync engine, backup, links, and the Deen dataset.
+Runs 70 tests: finance, dates, search, CSV, the sync engine, backup, links, and the Deen dataset.
 
 ```bash
 npm run test:rules
@@ -54,7 +54,7 @@ On https://osamaessam49.github.io/osama-hub/, project `osama-hub-eg`, using the 
 
 - [x] Amounts held as integer piastres, with no floating-point error (unit)
 - [x] Arabic digits accepted in amount fields (unit, browser)
-- [x] Partner share is a percentage of gross income, even when expenses exceed income (unit, browser)
+- [x] Partner share is a percentage of income minus expenses per month, with no share on a loss month and no carry-over (unit)
 - [x] Net = income − expenses − share (unit, browser, with hand-checked figures)
 - [x] Payments reduce the balance and never change the net (unit, browser)
 - [x] Effective-dated rate changes do not rewrite history (unit)

@@ -117,14 +117,17 @@ export function exportYearly(incomes: Income[], expenses: Expense[], settings: A
 }
 
 /** Statement of account: the share accrues month by month and payments settle it, with a running balance. */
-export function exportPartnerStatement(incomes: Income[], payments: PartnerPayment[], settings: AppSettings) {
-  const byMonth = group(incomes, monthKey)
+export function exportPartnerStatement(incomes: Income[], expenses: Expense[], payments: PartnerPayment[], settings: AppSettings) {
+  const incomeByMonth = group(incomes, monthKey)
+  const expensesByMonth = group(expenses, monthKey)
   const lines: { date: string; order: number; desc: string; accrued: number; paid: number; note: string }[] = []
-  for (const [m, list] of byMonth) {
-    const gross = sum(list)
-    const share = partnerShare(list, settings.partnerRates)
+  for (const m of new Set([...incomeByMonth.keys(), ...expensesByMonth.keys()])) {
+    const inc = incomeByMonth.get(m) ?? []
+    const exp = expensesByMonth.get(m) ?? []
+    const net = sum(inc) - sum(exp)
+    const share = partnerShare(inc, exp, settings.partnerRates)
     const pct = bpToPercent(rateOn(`${m}-28`, settings.partnerRates))
-    lines.push({ date: `${m}-01`, order: 0, desc: tr(`حصة ${m} (${pct}% من إجمالي ${minorToDecimal(gross)})`, `Share for ${m} (${pct}% of gross ${minorToDecimal(gross)})`), accrued: share, paid: 0, note: '' })
+    lines.push({ date: `${m}-01`, order: 0, desc: tr(`حصة ${m} (${pct}% من الصافي ${minorToDecimal(net)})`, `Share for ${m} (${pct}% of net ${minorToDecimal(net)})`), accrued: share, paid: 0, note: '' })
   }
   for (const p of payments) lines.push({ date: p.date, order: 1, desc: tr('دفعة للشريك', 'Payment to partner'), accrued: 0, paid: p.amountMinor, note: p.notes })
   lines.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order)

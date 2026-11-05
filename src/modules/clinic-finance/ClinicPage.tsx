@@ -248,7 +248,7 @@ function Overview({ incomes, expenses, payments, onAdd, onPartner }: {
       year: at(rangeFor('year', settings.weekStart, today)),
     }
   }, [incomes, expenses, settings, today])
-  const bal = partnerBalance(incomes, payments, settings.partnerRates)
+  const bal = partnerBalance(incomes, expenses, payments, settings.partnerRates)
   const trend = useMemo(() => {
     const yr: DateRange = { from: startOfYear(today), to: endOfYear(today) }
     const b = trendBuckets(yr)
@@ -279,7 +279,7 @@ function Overview({ incomes, expenses, payments, onAdd, onPartner }: {
           {[
             { label: tr('الإيرادات', 'Income'), value: s.income, tone: 'cobalt' as const },
             { label: tr('المصروفات', 'Expenses'), value: s.expenses, tone: 'ink' as const },
-            { label: tr(`حصة الشريك (${bpToPercent(rateOn(range.to, settings.partnerRates))}% من الإجمالي)`, `Partner share (${bpToPercent(rateOn(range.to, settings.partnerRates))}% of gross)`), value: s.partnerShare, tone: 'gold' as const },
+            { label: tr(`حصة الشريك (${bpToPercent(rateOn(range.to, settings.partnerRates))}% من الصافي)`, `Partner share (${bpToPercent(rateOn(range.to, settings.partnerRates))}% of net)`), value: s.partnerShare, tone: 'gold' as const },
           ].map((row) => (
             <div key={row.label}>
               <div className="mb-1.5 flex items-baseline justify-between gap-3">
@@ -425,14 +425,15 @@ function TransactionList({ kind, rows, onEdit }: { kind: Kind; rows: (Stored<Inc
 }
 
 // ── Partner ──
-function PartnerTab({ incomes, payments, onPay, onEditPayment }: { incomes: Stored<Income>[]; payments: Stored<PartnerPayment>[]; onPay: () => void; onEditPayment: (p: Stored<PartnerPayment>) => void }) {
+function PartnerTab({ incomes, expenses, payments, onPay, onEditPayment }: { incomes: Stored<Income>[]; expenses: Stored<Expense>[]; payments: Stored<PartnerPayment>[]; onPay: () => void; onEditPayment: (p: Stored<PartnerPayment>) => void }) {
   const { tr, lang } = useI18n()
   const { settings } = useSettings()
-  const bal = partnerBalance(incomes, payments, settings.partnerRates)
+  const bal = partnerBalance(incomes, expenses, payments, settings.partnerRates)
   const m = (v: number) => formatMoney(v, lang)
   const today = todayStr()
   const period = usePeriod('year')
   const periodIncome = useMemo(() => incomes.filter((i) => inRange(i.date, period.range)), [incomes, period.range])
+  const periodExpenses = useMemo(() => expenses.filter((e) => inRange(e.date, period.range)), [expenses, period.range])
   const paidPct = bal.owed ? (bal.paid / bal.owed) * 100 : 0
   const sorted = useMemo(() => [...payments].sort((a, b) => b.date.localeCompare(a.date)), [payments])
 
@@ -458,9 +459,9 @@ function PartnerTab({ incomes, payments, onPay, onEditPayment }: { incomes: Stor
 
       <section className="card p-5 text-[15px] text-muted">
         <p>
-          {tr('حصة الشريك = إجمالي الإيرادات × النسبة. النسبة الحالية', 'Partner share = gross income × rate. The current rate is')}{' '}
+          {tr('حصة الشريك = (الإيرادات − المصروفات) × النسبة، وتُحسب لكل شهر على حدة. النسبة الحالية', 'Partner share = (income − expenses) × rate, worked out for each month. The current rate is')}{' '}
           <strong className="text-ink">{bpToPercent(rateOn(today, settings.partnerRates))}%</strong>
-          {tr('، وتُعدّل من الإعدادات. الصافي = الإيرادات − المصروفات − الحصة. الدفعات تسدد الحصة ولا تُخصم مرة ثانية.', ', editable in Settings. Net = income − expenses − share. Payments settle the share and are not deducted a second time.')}
+          {tr('، وتُعدّل من الإعدادات. الشهر الخاسر لا تُحسب عنه حصة. صافي النتيجة = الإيرادات − المصروفات − الحصة. الدفعات تسدد الحصة ولا تُخصم مرة ثانية.', ', editable in Settings. A month that ends in a loss earns no share. Net result = income − expenses − share. Payments settle the share and are not deducted a second time.')}
         </p>
       </section>
 
@@ -468,13 +469,13 @@ function PartnerTab({ incomes, payments, onPay, onEditPayment }: { incomes: Stor
         <SectionTitle>{tr('الحصة حسب الفترة', 'Share by period')}</SectionTitle>
         <PeriodPicker p={period} />
         <div className="grid grid-cols-2 gap-4">
-          <Stat label={tr('إجمالي الإيرادات', 'Gross income')} value={m(sum(periodIncome))} />
-          <Stat label={tr('حصة الشريك', 'Partner share')} value={m(partnerShare(periodIncome, settings.partnerRates))} />
+          <Stat label={tr('الصافي قبل حصة الشريك', 'Net before partner share')} value={m(sum(periodIncome) - sum(periodExpenses))} />
+          <Stat label={tr('حصة الشريك', 'Partner share')} value={m(partnerShare(periodIncome, periodExpenses, settings.partnerRates))} />
         </div>
       </section>
 
       <section>
-        <SectionTitle action={<Button size="sm" icon={Download} onClick={() => exportPartnerStatement(incomes, payments, settings)}>{tr('كشف حساب', 'Statement')}</Button>}>{tr('سجل الدفعات', 'Payment history')}</SectionTitle>
+        <SectionTitle action={<Button size="sm" icon={Download} onClick={() => exportPartnerStatement(incomes, expenses, payments, settings)}>{tr('كشف حساب', 'Statement')}</Button>}>{tr('سجل الدفعات', 'Payment history')}</SectionTitle>
         {sorted.length === 0 ? (
           <EmptyState icon={Wallet} title={tr('لم تُسجل دفعات بعد', 'No payments recorded yet')} body={tr('سجّل كل دفعة ليبقى الرصيد دقيقًا.', 'Record each payment to keep the balance accurate.')} />
         ) : (
@@ -593,7 +594,7 @@ function Reports({ incomes, expenses, payments }: { incomes: Stored<Income>[]; e
           <Select label={tr('سنة التقرير', 'Report year')} value={year} onChange={(e) => setYear(e.target.value)} options={years.map((y) => ({ value: y, label: y }))} className="w-32" />
           <Button icon={FileSpreadsheet} onClick={() => exportMonthly(incomes, expenses, settings, year)}>{tr('التقرير الشهري', 'Monthly report')}</Button>
           <Button icon={FileSpreadsheet} onClick={() => exportYearly(incomes, expenses, settings)}>{tr('التقرير السنوي', 'Yearly report')}</Button>
-          <Button icon={FileSpreadsheet} onClick={() => exportPartnerStatement(incomes, payments, settings)}>{tr('كشف حساب الشريك', 'Partner statement')}</Button>
+          <Button icon={FileSpreadsheet} onClick={() => exportPartnerStatement(incomes, expenses, payments, settings)}>{tr('كشف حساب الشريك', 'Partner statement')}</Button>
         </div>
       </section>
     </div>
@@ -625,7 +626,7 @@ export default function ClinicPage() {
     setOpenId(null)
   }, [openId, incomes, expenses])
 
-  const balance = partnerBalance(incomes.items, payments.items, settings.partnerRates).balance
+  const balance = partnerBalance(incomes.items, expenses.items, payments.items, settings.partnerRates).balance
   const loading = incomes.loading || expenses.loading || payments.loading
 
   return (
@@ -659,7 +660,7 @@ export default function ClinicPage() {
               <TransactionList kind="expense" rows={expenses.items} onEdit={(record) => setForm({ kind: 'expense', record })} />
             </>
           )}
-          {tab === 'partner' && <PartnerTab incomes={incomes.items} payments={payments.items} onPay={() => setPayForm({})} onEditPayment={(payment) => setPayForm({ payment })} />}
+          {tab === 'partner' && <PartnerTab incomes={incomes.items} expenses={expenses.items} payments={payments.items} onPay={() => setPayForm({})} onEditPayment={(payment) => setPayForm({ payment })} />}
           {tab === 'reports' && <Reports incomes={incomes.items} expenses={expenses.items} payments={payments.items} />}
         </>
       )}

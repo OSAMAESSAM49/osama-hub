@@ -210,7 +210,7 @@ function PartnerRateEditor() {
   }
 
   return (
-    <Block title={tr('نسبة الشريك', 'Partner percentage')} hint={tr('تُحسب من إجمالي الإيرادات، لا من صافي الربح.', 'Calculated on gross income, not on net profit.')}>
+    <Block title={tr('نسبة الشريك', 'Partner percentage')} hint={tr('تُحسب من الصافي (الإيرادات − المصروفات) لكل شهر. الشهر الخاسر لا تُحسب عنه حصة.', 'Calculated on net (income − expenses) for each month. A month that ends in a loss earns no share.')}>
       <div className="grid grid-cols-2 gap-3">
         <Input label={tr('النسبة %', 'Rate %')} inputMode="decimal" dir="ltr" value={pct} onChange={(e) => setPct(e.target.value)} error={error} />
         <Input label={tr('تسري من', 'Applies from')} type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
@@ -406,7 +406,7 @@ function DataSection() {
           <Button icon={FileSpreadsheet} onClick={() => exportTransactions(income, expenses, settings, { from: '0001-01-01', to: '9999-12-31' })}>{tr('كل المعاملات', 'All transactions')}</Button>
           <Button icon={FileSpreadsheet} onClick={() => exportMonthly(income, expenses, settings, year)}>{tr(`شهري ${year}`, `Monthly ${year}`)}</Button>
           <Button icon={FileSpreadsheet} onClick={() => exportYearly(income, expenses, settings)}>{tr('سنوي', 'Yearly')}</Button>
-          <Button icon={FileSpreadsheet} onClick={() => exportPartnerStatement(income, payments, settings)}>{tr('كشف الشريك', 'Partner statement')}</Button>
+          <Button icon={FileSpreadsheet} onClick={() => exportPartnerStatement(income, expenses, payments, settings)}>{tr('كشف الشريك', 'Partner statement')}</Button>
         </div>
       </Block>
 

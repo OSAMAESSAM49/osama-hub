@@ -45,8 +45,9 @@ Default life domains and bookmark collections use stable ids and are written loc
 ## Clinic finance rules
 
 - Money is an integer number of piastres. Parsing is done on the string, never through floats.
-- `Partner share = gross income × rate`, rounded half up once per rate group.
-- `Net = income − expenses − partner share`.
+- `Partner share = (income − expenses) × rate`, worked out per calendar month and rounded half up once per month and rate.
+- A month that ends in a loss earns no share, and its loss does not carry into other months, so a year's share equals the sum of its months.
+- `Net result = income − expenses − partner share`.
 - Partner payments reduce the unpaid balance only and never touch the net, so nothing is counted twice.
 - Rates are effective-dated (`{ from, bp }`), so changing the rate does not rewrite past periods.
 - Dates are local `YYYY-MM-DD` strings, so a timezone cannot move a transaction to another day.

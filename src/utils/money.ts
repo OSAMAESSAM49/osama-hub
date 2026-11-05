@@ -57,18 +57,30 @@ export function rateOn(date: string, rates: PartnerRate[]): number {
   return current?.bp ?? 0
 }
 
+interface DatedAmount {
+  amountMinor: number
+  date: string
+}
+
 /**
- * Partner share = gross income × partner rate. It is computed on GROSS income, never on profit.
- * Income is grouped by rate and rounded per group, so totals do not drift with transaction count.
+ * Partner share = (income - expenses) × partner rate, worked out month by month.
+ * A month that ends in a loss earns no share, and its loss does not carry into other months, so a
+ * year's share always equals the sum of its months. Rounding happens once per month and rate, so
+ * totals do not drift with the number of transactions.
  */
-export function partnerShare(incomes: { amountMinor: number; date: string }[], rates: PartnerRate[]): number {
-  const byRate = new Map<number, number>()
-  for (const i of incomes) {
-    const bp = rateOn(i.date, rates)
-    byRate.set(bp, (byRate.get(bp) ?? 0) + i.amountMinor)
+export function partnerShare(incomes: DatedAmount[], expenses: DatedAmount[], rates: PartnerRate[]): number {
+  const nets = new Map<string, { bp: number; net: number }>()
+  const add = (row: DatedAmount, sign: 1 | -1) => {
+    const bp = rateOn(row.date, rates)
+    const key = `${row.date.slice(0, 7)}|${bp}`
+    const entry = nets.get(key) ?? { bp, net: 0 }
+    entry.net += sign * row.amountMinor
+    nets.set(key, entry)
   }
+  for (const i of incomes) add(i, 1)
+  for (const e of expenses) add(e, -1)
   let total = 0
-  for (const [bp, amount] of byRate) total += applyBasisPoints(amount, bp)
+  for (const { bp, net } of nets.values()) if (net > 0) total += applyBasisPoints(net, bp)
   return total
 }
 
@@ -76,18 +88,18 @@ export interface FinanceSummary {
   income: number
   expenses: number
   partnerShare: number
-  /** Net = income - expenses - partner share. Payments to the partner are NOT subtracted. */
+  /** Net = income - expenses - partner share. Payments to the partner are not subtracted again. */
   net: number
 }
 
 export function summarize(
-  incomes: { amountMinor: number; date: string }[],
-  expenses: { amountMinor: number }[],
+  incomes: DatedAmount[],
+  expenses: DatedAmount[],
   rates: PartnerRate[],
 ): FinanceSummary {
   const income = sum(incomes)
   const exp = sum(expenses)
-  const share = partnerShare(incomes, rates)
+  const share = partnerShare(incomes, expenses, rates)
   return { income, expenses: exp, partnerShare: share, net: income - exp - share }
 }
 
@@ -96,11 +108,12 @@ export function summarize(
  * reduce what is owed and never touch the net result. A negative balance means an overpayment.
  */
 export function partnerBalance(
-  allIncome: { amountMinor: number; date: string }[],
+  allIncome: DatedAmount[],
+  allExpenses: DatedAmount[],
   allPayments: { amountMinor: number }[],
   rates: PartnerRate[],
 ) {
-  const owed = partnerShare(allIncome, rates)
+  const owed = partnerShare(allIncome, allExpenses, rates)
   const paid = sum(allPayments)
   return { owed, paid, balance: owed - paid }
 }

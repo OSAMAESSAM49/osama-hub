@@ -28,20 +28,43 @@ describe('parseAmount', () => {
 })
 
 describe('partner share', () => {
-  it('is 5% of GROSS income, whatever the expenses are', () => {
-    const s = summarize([{ amountMinor: 1_000_000, date: '2026-01-10' }], [{ amountMinor: 900_000 }], RATES)
-    expect(s.partnerShare).toBe(50_000)
-    expect(s.net).toBe(1_000_000 - 900_000 - 50_000)
-  })
-  it('does not reduce the share when expenses exceed income', () => {
-    const s = summarize([{ amountMinor: 100_000, date: '2026-01-10' }], [{ amountMinor: 500_000 }], RATES)
+  const day = (amountMinor: number, date = '2026-01-10') => ({ amountMinor, date })
+
+  it('is 5% of income minus expenses', () => {
+    const s = summarize([day(1_000_000)], [day(900_000)], RATES)
     expect(s.partnerShare).toBe(5_000)
-    expect(s.net).toBe(-405_000)
+    expect(s.net).toBe(1_000_000 - 900_000 - 5_000)
   })
-  it('rounds half up on the grouped total, not per transaction', () => {
+  it('matches a worked example', () => {
+    const s = summarize([day(8_055_000)], [day(5_631_600)], RATES)
+    expect(s.partnerShare).toBe(121_170)
+    expect(s.net).toBe(2_302_230)
+  })
+  it('is zero when a month ends in a loss, and the loss is not shared', () => {
+    const s = summarize([day(100_000)], [day(500_000)], RATES)
+    expect(s.partnerShare).toBe(0)
+    expect(s.net).toBe(-400_000)
+  })
+  it('does not carry a loss from one month into another', () => {
+    const incomes = [day(100_000, '2026-01-10'), day(1_000_000, '2026-02-10')]
+    const expenses = [day(500_000, '2026-01-20'), day(200_000, '2026-02-20')]
+    expect(partnerShare(incomes, expenses, RATES)).toBe(40_000)
+  })
+  it('makes a year equal the sum of its months', () => {
+    const incomes = [day(300_000, '2026-01-10'), day(700_000, '2026-02-10'), day(90_000, '2026-03-10')]
+    const expenses = [day(100_000, '2026-01-20'), day(800_000, '2026-02-20')]
+    const months = ['2026-01', '2026-02', '2026-03'].map((m) =>
+      partnerShare(incomes.filter((i) => i.date.startsWith(m)), expenses.filter((e) => e.date.startsWith(m)), RATES),
+    )
+    expect(partnerShare(incomes, expenses, RATES)).toBe(months[0]! + months[1]! + months[2]!)
+  })
+  it('counts expenses within a month even on a different day from the income', () => {
+    expect(partnerShare([day(1_000_000, '2026-01-02')], [day(400_000, '2026-01-28')], RATES)).toBe(30_000)
+  })
+  it('rounds half up on the monthly net, not per transaction', () => {
     expect(applyBasisPoints(10, 500)).toBe(1)
-    const many = Array.from({ length: 100 }, () => ({ amountMinor: 1, date: '2026-01-01' }))
-    expect(partnerShare(many, RATES)).toBe(5)
+    const many = Array.from({ length: 100 }, () => day(1, '2026-01-01'))
+    expect(partnerShare(many, [], RATES)).toBe(5)
   })
   it('applies effective-dated rates without rewriting history', () => {
     const rates = [{ from: '0001-01-01', bp: 500 }, { from: '2026-06-01', bp: 1000 }]
@@ -49,19 +72,20 @@ describe('partner share', () => {
     expect(rateOn('2026-06-01', rates)).toBe(1000)
     const share = partnerShare(
       [{ amountMinor: 100_000, date: '2026-05-01' }, { amountMinor: 100_000, date: '2026-07-01' }],
+      [{ amountMinor: 40_000, date: '2026-05-02' }],
       rates,
     )
-    expect(share).toBe(5_000 + 10_000)
+    expect(share).toBe(3_000 + 10_000)
   })
   it('never subtracts payments from the net result, so nothing is counted twice', () => {
     const incomes = [{ amountMinor: 1_000_000, date: '2026-01-10' }]
     const before = summarize(incomes, [], RATES).net
-    const bal = partnerBalance(incomes, [{ amountMinor: 20_000 }], RATES)
+    const bal = partnerBalance(incomes, [], [{ amountMinor: 20_000 }], RATES)
     expect(bal).toEqual({ owed: 50_000, paid: 20_000, balance: 30_000 })
     expect(summarize(incomes, [], RATES).net).toBe(before)
   })
   it('reports an overpayment as a negative balance', () => {
-    expect(partnerBalance([{ amountMinor: 100_000, date: '2026-01-01' }], [{ amountMinor: 6_000 }], RATES).balance).toBe(-1_000)
+    expect(partnerBalance([{ amountMinor: 100_000, date: '2026-01-01' }], [], [{ amountMinor: 6_000 }], RATES).balance).toBe(-1_000)
   })
 })
 
