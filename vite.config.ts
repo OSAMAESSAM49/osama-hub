@@ -72,7 +72,8 @@ export default defineConfig(({ mode }) => {
           // Application shell only. Private Firestore and Storage responses are cross-origin and are
           // never cached by the service worker: user data lives in the user's own IndexedDB database.
           globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,woff2}'],
-          globIgnores: ['data/**'],
+          // The Excel library is large and only needed when exporting, so it is cached on first use.
+          globIgnores: ['data/**', '**/exceljs*.js'],
           maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
           navigateFallback: 'index.html',
           cleanupOutdatedCaches: true,
@@ -80,6 +81,11 @@ export default defineConfig(({ mode }) => {
           // Updates still wait for the user, because skipWaiting stays off in prompt mode.
           clientsClaim: true,
           runtimeCaching: [
+            {
+              urlPattern: ({ url }) => url.pathname.includes('/assets/exceljs'),
+              handler: 'CacheFirst',
+              options: { cacheName: 'excel-lib-v1', expiration: { maxEntries: 4 } },
+            },
             {
               // The public Quran and Hadith dataset is fetched per day and kept for offline reading.
               urlPattern: ({ url }) => url.pathname.includes('/data/deen/'),

@@ -12,7 +12,7 @@ Status of the build as handed over.
 npm test
 ```
 
-Runs 74 tests: finance, dates, search, CSV, the sync engine, backup, links, and the Deen dataset.
+Runs 96 tests: finance, dates, search, CSV, the sync engine, backup, links, and the Deen dataset.
 
 ```bash
 npm run test:rules
@@ -98,7 +98,19 @@ On https://osamaessam49.github.io/osama-hub/, project `osama-hub-eg`, using the 
 - [x] Add an expense and an income through the form, including Arabic digits and save & add another (browser)
 - [x] List, insights, dashboard card, settings categories and search, at 390px and 320px with no overflow (browser)
 
+### Reports, targets and budgets
+
+- [x] Report figures, partner share on net, target on income or net, budget and category limits (unit)
+- [x] Excel workbook built and read back: sheet names, right-to-left, money as numbers with a money format, dates as dates (unit)
+- [x] Excel export runs under the production Content Security Policy with no violations (browser, production build)
+- [x] PDF preview renders the clinic and personal reports in Arabic at 390px (browser, production build)
+- [x] Target and budget set through the form; bars, states and remaining amounts shown on the clinic, personal and home screens (browser)
+- [ ] The print dialog itself and "Save as PDF" on a real phone: not run, because the test browser cannot open the print dialog
+
 ### Life Compass and links
+
+- [x] Goal phases: created with a new goal, ordered, reordered, progress by slider, auto-complete at 100%, current phase and "done/total" shown, goal progress is the phase average (browser)
+- [x] Phase ordering and current-phase rules (unit)
 
 - [x] Goal progress rule, and satisfaction staying separate (unit)
 - [x] Goal tree, domain balance view and vision page render (browser)

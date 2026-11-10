@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
-  AlertTriangle, CheckCircle2, Clock, Download, FileSpreadsheet, Languages, LogOut, Plus, RefreshCw, RotateCcw, Share, Smartphone, Trash2, Upload, XCircle,
+  AlertTriangle, CheckCircle2, Clock, Download, FileSpreadsheet, Target, Languages, LogOut, Plus, RefreshCw, RotateCcw, Share, Smartphone, Trash2, Upload, XCircle,
 } from 'lucide-react'
 import { confirmAction, toast } from '@/components/common/feedback'
 import { Button, cx, IconButton, Input, PageHeader, SectionTitle, Segmented, Select, Sheet, Tag } from '@/components/common/ui'
+import { GoalsSheet, type GoalScope } from '@/components/finance/Goals'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSettings } from '@/hooks/useSettings'
 import { setPrefs, useI18n, usePrefs, type ThemePref } from '@/i18n'
@@ -232,11 +233,16 @@ function PartnerRateEditor() {
 function PersonalSection() {
   const { tr } = useI18n()
   const { settings, save } = useSettings()
+  const [goals, setGoals] = useState<GoalScope | null>(null)
   const rows = useCollection('personalTransactions').items
   const usedIn = useMemo(() => new Set(rows.filter((r) => r.kind === 'income').map((r) => r.categoryId)), [rows])
   const usedEx = useMemo(() => new Set(rows.filter((r) => r.kind === 'expense').map((r) => r.categoryId)), [rows])
   return (
     <div className="space-y-4">
+      <Block title={tr('البادجت الشهري', 'Monthly budget')}>
+        <Button icon={Target} onClick={() => setGoals('personal')}>{tr('تعديل البادجت', 'Edit budget')}</Button>
+      </Block>
+      {goals && <GoalsSheet scope={goals} onClose={() => setGoals(null)} />}
       <CategoryEditor title={tr('تصنيفات مصروفك الشخصي', 'Personal spending categories')} list={settings.personalExpenseCategories} used={usedEx} onChange={(personalExpenseCategories) => void save({ personalExpenseCategories })} />
       <CategoryEditor title={tr('مصادر دخلك الشخصي', 'Personal income sources')} list={settings.personalIncomeCategories} used={usedIn} onChange={(personalIncomeCategories) => void save({ personalIncomeCategories })} />
     </div>
@@ -246,6 +252,7 @@ function PersonalSection() {
 function ClinicSection() {
   const { tr } = useI18n()
   const { settings, save } = useSettings()
+  const [goals, setGoals] = useState<GoalScope | null>(null)
   const income = useCollection('income').items
   const expenses = useCollection('expenses').items
   const usedIn = useMemo(() => new Set(income.map((i) => i.categoryId)), [income])
@@ -257,6 +264,10 @@ function ClinicSection() {
         <SavedInput label={tr('اسم الشريك (اختياري)', 'Partner name (optional)')} value={settings.partnerName} onSave={(partnerName) => void save({ partnerName })} />
         <Row label={tr('العملة', 'Currency')}>{tr('جنيه مصري (EGP)', 'Egyptian pound (EGP)')}</Row>
       </Block>
+      <Block title={tr('الهدف والبادجت الشهري', 'Monthly target and budget')}>
+        <Button icon={Target} onClick={() => setGoals('clinic')}>{tr('تعديل الهدف والبادجت', 'Edit target and budget')}</Button>
+      </Block>
+      {goals && <GoalsSheet scope={goals} onClose={() => setGoals(null)} />}
       <PartnerRateEditor />
       <CategoryEditor title={tr('تصنيفات الإيرادات', 'Income categories')} list={settings.incomeCategories} used={usedIn} onChange={(incomeCategories) => void save({ incomeCategories })} />
       <CategoryEditor title={tr('تصنيفات المصروفات', 'Expense categories')} list={settings.expenseCategories} used={usedEx} onChange={(expenseCategories) => void save({ expenseCategories })} />

@@ -19,6 +19,7 @@
     "@tiptap/pm": "^3.32.2",
     "@tiptap/react": "^3.32.2",
     "@tiptap/starter-kit": "^3.32.2",
+    "exceljs": "^4.4.0",
     "firebase": "^13.2.0",
     "idb": "^8.0.4",
     "lucide-react": "^1.68.0",

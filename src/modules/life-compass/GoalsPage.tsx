@@ -12,12 +12,14 @@ import type { Horizon, LifeGoal, LifeMilestone, Stored } from '@/types/models'
 import { formatDate, todayStr } from '@/utils/dates'
 import { matches } from '@/utils/text'
 import { GoalForm } from './GoalForm'
+import { phaseSummary } from './Phases'
 
 const HORIZON_RANK = Object.fromEntries(HORIZONS.map((h, i) => [h, i])) as Record<Horizon, number>
 
 function GoalRow({ goal, milestones, childCount, lang, dateFmt }: { goal: Stored<LifeGoal>; milestones: LifeMilestone[]; childCount: number; lang: 'ar' | 'en'; dateFmt: 'long' | 'dmy' | 'iso' }) {
   const { tr } = useI18n()
   const { value } = goalProgress(goal, milestones)
+  const phases = phaseSummary(milestones.filter((m) => m.goalId === goal.id))
   const overdue = isGoalOverdue(goal)
   return (
     <Link to={`/compass/goals/${goal.id}`} className={cx('card block p-4 transition hover:bg-raised', (goal.status === 'cancelled' || goal.archived) && 'opacity-60')}>
@@ -28,6 +30,7 @@ function GoalRow({ goal, milestones, childCount, lang, dateFmt }: { goal: Stored
             {goal.status !== 'inProgress' && goal.status !== 'notStarted' && <Tag tone={goal.status === 'completed' ? 'good' : 'neutral'}>{goalStatusLabel(goal.status)}</Tag>}
             {overdue && <Tag tone="warn">{tr('تجاوز الموعد', 'Past target')}</Tag>}
             {childCount > 0 && <Tag>{tr(`${childCount} فرعي`, `${childCount} sub-goals`)}</Tag>}
+            {phases.total > 0 && <Tag tone="accent">{tr(`${phases.done}/${phases.total} مراحل`, `${phases.done}/${phases.total} phases`)}</Tag>}
           </div>
           <h3 className="font-bold" dir="auto">{goal.title}</h3>
           {goal.targetDate && <p className="text-sm text-faint">{formatDate(goal.targetDate, lang, dateFmt)}</p>}

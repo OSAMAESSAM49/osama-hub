@@ -48,6 +48,7 @@ export function GoalForm({ goal, parentId, horizon: initialHorizon, domainId, on
   const [status, setStatus] = useState<GoalStatus>(goal?.status ?? 'notStarted')
   const [parentSel, setParent] = useState(goal?.parentId ?? parentId ?? '')
   const [notes, setNotes] = useState(goal?.notes ?? '')
+  const [phases, setPhases] = useState('')
   const [errors, setErrors] = useState<{ title?: string; target?: string }>({})
 
   const excluded = goal ? descendantIds(goals, goal.id) : new Set<string>()
@@ -69,6 +70,12 @@ export function GoalForm({ goal, parentId, horizon: initialHorizon, domainId, on
     const saved = goal
       ? await repo.update('lifeGoals', goal.id, data)
       : await repo.create('lifeGoals', { ...data, progress: 0, archived: false, links: [] })
+    if (!goal) {
+      const titles = phases.split('\n').map((t) => t.trim()).filter(Boolean)
+      for (const [order, t] of titles.entries()) {
+        await repo.create('lifeMilestones', { goalId: saved.id, title: t, description: '', dueDate: null, completed: false, progress: 0, taskId: null, order })
+      }
+    }
     toast(tr('حُفظ الهدف', 'Goal saved'))
     onSaved?.(saved.id)
     onClose()
@@ -99,6 +106,16 @@ export function GoalForm({ goal, parentId, horizon: initialHorizon, domainId, on
           <Textarea label={tr('كيف ستقيس النجاح؟', 'How will you measure it?')} value={measurement} onChange={(e) => setMeasurement(e.target.value)} rows={2} />
         </div>
         <Textarea label={tr('ملاحظات', 'Notes')} value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+        {!goal && (
+          <Textarea
+            label={tr('المراحل (اختياري، مرحلة في كل سطر)', 'Phases (optional, one per line)')}
+            value={phases}
+            onChange={(e) => setPhases(e.target.value)}
+            rows={4}
+            placeholder={tr('مثال:\nكتابة المنهج\nتصوير الوحدات\nالإطلاق', 'e.g.\nWrite the syllabus\nFilm the lessons\nLaunch')}
+            hint={tr('يُحسب تقدم الهدف من متوسط تقدم مراحله.', "The goal's progress is the average of its phases.")}
+          />
+        )}
       </form>
     </Sheet>
   )

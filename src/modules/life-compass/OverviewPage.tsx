@@ -103,8 +103,8 @@ export default function OverviewPage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className="card p-5">
-          <SectionTitle>{tr('المعالم القادمة', 'Upcoming milestones')}</SectionTitle>
-          {upcoming.length === 0 ? <p className="text-[15px] text-faint">{tr('لا معالم بمواعيد قريبة.', 'No milestones with upcoming dates.')}</p> : (
+          <SectionTitle>{tr('المراحل القادمة', 'Upcoming phases')}</SectionTitle>
+          {upcoming.length === 0 ? <p className="text-[15px] text-faint">{tr('لا مراحل بمواعيد قريبة.', 'No phases with upcoming dates.')}</p> : (
             <ul className="space-y-1">
               {upcoming.map((m) => (
                 <li key={m.id}>

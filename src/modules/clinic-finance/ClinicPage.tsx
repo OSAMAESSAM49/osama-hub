@@ -1,11 +1,14 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ArrowDownCircle, ArrowUpCircle, Banknote, Download, FileSpreadsheet, HandCoins, Plus, Receipt, Search, Wallet } from 'lucide-react'
+import { ArrowDownCircle, ArrowUpCircle, Banknote, Download, FileSpreadsheet, FileText, HandCoins, Plus, Receipt, Search, Wallet } from 'lucide-react'
 import { confirmDelete, toast } from '@/components/common/feedback'
 import {
   Button, Chip, ChipRow, ComboInput, cx, EmptyState, heroNumberClass, FormFooter, Input, ListSkeleton, PageHeader, ProgressBar, SectionTitle, Segmented, Select, Sheet, Stat, SyncBadge, Textarea,
 } from '@/components/common/ui'
+import { GoalsCard } from '@/components/finance/Goals'
+import { ReportPreview } from '@/components/finance/ReportPreview'
 import { CategoryBars, PeriodPicker, usePeriod } from '@/components/finance/shared'
+import { clinicProgress, clinicReport, type Report } from '@/services/export/report'
 import { useParamOnce } from '@/hooks/useParamOnce'
 import { useSettings } from '@/hooks/useSettings'
 import { useI18n } from '@/i18n'
@@ -261,6 +264,8 @@ function Overview({ incomes, expenses, payments, onAdd, onPartner }: {
         </section>
       </div>
 
+      <GoalsCard scope="clinic" progress={clinicProgress(incomes, expenses, settings)} />
+
       <section className="card p-5">
         <SectionTitle>{tr('نظرة ثابتة', 'At a glance')}</SectionTitle>
         <div className="overflow-x-auto">
@@ -472,6 +477,20 @@ function Reports({ incomes, expenses, payments }: { incomes: Stored<Income>[]; e
   const { settings } = useSettings()
   const period = usePeriod('year')
   const { range } = period
+  const [report, setReport] = useState<Report | null>(null)
+  const [exporting, setExporting] = useState(false)
+  const excel = async () => {
+    setExporting(true)
+    try {
+      const { downloadExcel } = await import('@/services/export/excel')
+      await downloadExcel(clinicReport(incomes, expenses, payments, settings, range))
+      toast(tr('نُزل ملف Excel', 'Excel file downloaded'))
+    } catch {
+      toast(tr('تعذر إنشاء ملف Excel', 'Could not create the Excel file'), 'error')
+    } finally {
+      setExporting(false)
+    }
+  }
   const inc = useMemo(() => incomes.filter((i) => inRange(i.date, range)), [incomes, range])
   const exp = useMemo(() => expenses.filter((e) => inRange(e.date, range)), [expenses, range])
   const s = summarize(inc, exp, settings.partnerRates)
@@ -533,6 +552,14 @@ function Reports({ incomes, expenses, payments }: { incomes: Stored<Income>[]; e
         )}
       </section>
       <section className="card space-y-3 p-5">
+        <SectionTitle>{tr('تقرير منسق للفترة المحددة', 'Formatted report for this period')}</SectionTitle>
+        <p className="text-sm text-muted">{tr('ملخص، هدف وبادجت، تصنيفات، مقارنة، كل الإيرادات والمصروفات، وكشف الشريك.', 'Summary, target and budget, categories, comparison, every income and expense, and the partner statement.')}</p>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="ink" icon={FileText} onClick={() => setReport(clinicReport(incomes, expenses, payments, settings, range))}>{tr('تقرير PDF', 'PDF report')}</Button>
+          <Button icon={FileSpreadsheet} busy={exporting} onClick={() => void excel()}>{tr('ملف Excel منسق', 'Formatted Excel')}</Button>
+        </div>
+      </section>
+      <section className="card space-y-3 p-5">
         <SectionTitle>{tr('تصدير CSV (يفتح في Excel)', 'Export CSV (opens in Excel)')}</SectionTitle>
         <Button icon={FileSpreadsheet} onClick={() => exportTransactions(incomes, expenses, settings, range)}>{tr('معاملات الفترة المحددة', 'Transactions for selected period')}</Button>
         <div className="flex flex-wrap items-end gap-2">
@@ -542,6 +569,7 @@ function Reports({ incomes, expenses, payments }: { incomes: Stored<Income>[]; e
           <Button icon={FileSpreadsheet} onClick={() => exportPartnerStatement(incomes, expenses, payments, settings)}>{tr('كشف حساب الشريك', 'Partner statement')}</Button>
         </div>
       </section>
+      {report && <ReportPreview report={report} onClose={() => setReport(null)} />}
     </div>
   )
 }

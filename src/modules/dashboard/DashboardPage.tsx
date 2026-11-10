@@ -16,6 +16,8 @@ import { formatMoney, summarize } from '@/utils/money'
 import { excerpt } from '@/utils/text'
 import { catName } from '../clinic-finance/finance'
 import { personalSummary } from '../personal-finance/personal'
+import { ProgressRow } from '@/components/finance/Goals'
+import { clinicProgress, personalProgress } from '@/services/export/report'
 import { DomainIcon } from '../life-compass/shared'
 
 const isOpen = (t: Task) => t.status === 'pending' || t.status === 'inProgress'
@@ -69,6 +71,7 @@ function FinanceHero() {
   const income = useCollection('income').items
   const expenses = useCollection('expenses').items
   const today = todayStr()
+  const target = clinicProgress(income, expenses, settings, today).find((p) => p.kind === 'target')
   const { day, month } = useMemo(() => {
     const dr = rangeFor('today', settings.weekStart, today)
     const mr = rangeFor('month', settings.weekStart, today)
@@ -85,6 +88,12 @@ function FinanceHero() {
       </div>
       <p className={cx('tnum mt-4 leading-none font-bold', heroNumberClass(formatMoney(month.net, 'en', false)))} dir="ltr" style={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>{formatMoney(month.net, 'en', false)}</p>
       <p className="mt-1 text-sm opacity-70">{tr('جنيه مصري، بعد المصروفات وحصة الشريك', 'EGP, after expenses and partner share')}</p>
+      {target && (
+        <div className="mt-4">
+          <div className="mb-1 flex justify-between gap-2 text-sm font-medium"><span>{target.label}</span><span className="tnum">{Math.round(target.pct)}%</span></div>
+          <div className="h-2.5 overflow-hidden rounded-full bg-charcoal/15"><div className="hatch h-full rounded-full bg-charcoal" style={{ width: `${Math.min(100, target.pct)}%` }} /></div>
+        </div>
+      )}
       <div className="mt-6 grid grid-cols-1 gap-3 min-[340px]:grid-cols-2">
         <div className="rounded-3xl bg-charcoal px-4 py-3 text-white">
           <div className="text-sm opacity-70">{tr('إيراد اليوم', "Today's income")}</div>
@@ -120,6 +129,7 @@ function PersonalWidget() {
           <div className={cx('tnum truncate text-xl font-bold', month.balance < 0 && 'text-negative')}>{formatMoney(month.balance, lang, false)}</div>
         </div>
       </div>
+      {personalProgress(items, settings)[0] && <div className="mt-3"><ProgressRow p={personalProgress(items, settings)[0]!} compact /></div>}
       <div className="mt-3 flex gap-2">
         <Link to="/money?add=expense" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-medium text-canvas">{tr('+ مصروف', '+ Expense')}</Link>
         <Link to="/money?add=income" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-raised px-4 text-sm font-medium">{tr('+ دخل', '+ Income')}</Link>

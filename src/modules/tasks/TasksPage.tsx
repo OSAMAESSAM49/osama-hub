@@ -129,7 +129,7 @@ export function TaskForm({ task, initialDue, onClose }: { task?: Stored<Task>; i
             options={[
               { value: '', label: tr('لا شيء', 'Nothing') },
               { value: 'lifeGoals', label: tr('هدف حياة', 'Life goal') },
-              { value: 'lifeMilestones', label: tr('معلم', 'Milestone') },
+              { value: 'lifeMilestones', label: tr('مرحلة هدف', 'Goal phase') },
               { value: 'contentIdeas', label: tr('فكرة محتوى', 'Content idea') },
             ]}
           />

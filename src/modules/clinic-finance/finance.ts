@@ -116,8 +116,17 @@ export function exportYearly(incomes: Income[], expenses: Expense[], settings: A
   downloadCsv([reportHeader(tr('السنة', 'Year')), ...rows.map(reportRow)], 'osama-hub-yearly-report.csv')
 }
 
+export interface StatementLine {
+  date: string
+  desc: string
+  accrued: number
+  paid: number
+  balance: number
+  note: string
+}
+
 /** Statement of account: the share accrues month by month and payments settle it, with a running balance. */
-export function exportPartnerStatement(incomes: Income[], expenses: Expense[], payments: PartnerPayment[], settings: AppSettings) {
+export function partnerStatement(incomes: Income[], expenses: Expense[], payments: PartnerPayment[], settings: AppSettings): StatementLine[] {
   const incomeByMonth = group(incomes, monthKey)
   const expensesByMonth = group(expenses, monthKey)
   const lines: { date: string; order: number; desc: string; accrued: number; paid: number; note: string }[] = []
@@ -132,10 +141,16 @@ export function exportPartnerStatement(incomes: Income[], expenses: Expense[], p
   for (const p of payments) lines.push({ date: p.date, order: 1, desc: tr('دفعة للشريك', 'Payment to partner'), accrued: 0, paid: p.amountMinor, note: p.notes })
   lines.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order)
   let balance = 0
-  const rows: (string | number)[][] = [[tr('التاريخ', 'Date'), tr('البيان', 'Description'), tr('مستحق', 'Accrued'), tr('مدفوع', 'Paid'), tr('الرصيد', 'Balance'), tr('ملاحظات', 'Notes')]]
-  for (const l of lines) {
+  return lines.map(({ order: _o, ...l }) => {
     balance += l.accrued - l.paid
-    rows.push([l.date, l.desc, l.accrued ? minorToDecimal(l.accrued) : '', l.paid ? minorToDecimal(l.paid) : '', minorToDecimal(balance), l.note])
+    return { ...l, balance }
+  })
+}
+
+export function exportPartnerStatement(incomes: Income[], expenses: Expense[], payments: PartnerPayment[], settings: AppSettings) {
+  const rows: (string | number)[][] = [[tr('التاريخ', 'Date'), tr('البيان', 'Description'), tr('مستحق', 'Accrued'), tr('مدفوع', 'Paid'), tr('الرصيد', 'Balance'), tr('ملاحظات', 'Notes')]]
+  for (const l of partnerStatement(incomes, expenses, payments, settings)) {
+    rows.push([l.date, l.desc, l.accrued ? minorToDecimal(l.accrued) : '', l.paid ? minorToDecimal(l.paid) : '', minorToDecimal(l.balance), l.note])
   }
   downloadCsv(rows, 'osama-hub-partner-statement.csv')
 }

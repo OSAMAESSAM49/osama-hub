@@ -1,11 +1,14 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import {
-  ArrowDownLeft, ArrowUpRight, Baby, BookOpen, Briefcase, Car, Circle, Coins, FileSpreadsheet, Fuel, Gift, GraduationCap, HandHeart, HeartPulse, Home,
+  ArrowDownLeft, ArrowUpRight, Baby, BookOpen, Briefcase, Car, Circle, Coins, FileSpreadsheet, FileText, Fuel, Gift, GraduationCap, HandHeart, HeartPulse, Home,
   Laptop, PieChart, Plus, Popcorn, Receipt, Repeat, Search, ShoppingBag, ShoppingBasket, Stethoscope, TrendingUp, Undo2, Users, Utensils, Wallet,
   type LucideIcon,
 } from 'lucide-react'
 import { confirmDelete, toast } from '@/components/common/feedback'
+import { GoalsCard } from '@/components/finance/Goals'
+import { ReportPreview } from '@/components/finance/ReportPreview'
 import { CategoryBars, categoryName, categoryTotals, PeriodPicker, usePeriod } from '@/components/finance/shared'
+import { personalProgress, personalReport, type Report } from '@/services/export/report'
 import {
   Button, cardNumberClass, Chip, ChipRow, ComboInput, cx, EmptyState, FormFooter, heroNumberClass, Input, ListSkeleton, PageHeader, SectionTitle, Segmented, Sheet, Stat, SyncBadge, Textarea,
 } from '@/components/common/ui'
@@ -212,6 +215,20 @@ export default function PersonalPage() {
   const [limit, setLimit] = useState(PAGE)
   const [form, setForm] = useState<{ kind: Kind; record?: Stored<PersonalTransaction> } | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
+  const [report, setReport] = useState<Report | null>(null)
+  const [exporting, setExporting] = useState(false)
+  const excel = async () => {
+    setExporting(true)
+    try {
+      const { downloadExcel } = await import('@/services/export/excel')
+      await downloadExcel(personalReport(items, settings, period.range))
+      toast(tr('نُزل ملف Excel', 'Excel file downloaded'))
+    } catch {
+      toast(tr('تعذر إنشاء ملف Excel', 'Could not create the Excel file'), 'error')
+    } finally {
+      setExporting(false)
+    }
+  }
   useParamOnce('add', (v) => setForm({ kind: v === 'income' ? 'income' : 'expense' }))
   useParamOnce('open', setOpenId)
 
@@ -294,6 +311,10 @@ export default function PersonalPage() {
         </section>
       </div>
 
+      <div className="mt-3">
+        <GoalsCard scope="personal" progress={personalProgress(items, settings)} />
+      </div>
+
       <Segmented
         className="mt-5 mb-4"
         label={tr('طريقة العرض', 'View')}
@@ -356,6 +377,13 @@ export default function PersonalPage() {
             <CategoryBars title={tr('مصادر الدخل', 'Where it came from')} rows={categoryTotals(earned, cats.income, lang)} />
           </div>
           <section className="card space-y-3 p-5">
+            <SectionTitle>{tr('تقرير منسق للفترة المحددة', 'Formatted report for this period')}</SectionTitle>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="ink" icon={FileText} onClick={() => setReport(personalReport(items, settings, period.range))}>{tr('تقرير PDF', 'PDF report')}</Button>
+              <Button icon={FileSpreadsheet} busy={exporting} onClick={() => void excel()}>{tr('ملف Excel منسق', 'Formatted Excel')}</Button>
+            </div>
+          </section>
+          <section className="card space-y-3 p-5">
             <SectionTitle>{tr('تصدير CSV (يفتح في Excel)', 'Export CSV (opens in Excel)')}</SectionTitle>
             <p className="text-sm text-muted">{tr(`${inRangeRows.length} حركة في الفترة المحددة، بإجمالي مصروف ${formatMoney(sum(spent), lang)}.`, `${inRangeRows.length} entries in this period, ${formatMoney(sum(spent), lang)} spent.`)}</p>
             <Button icon={FileSpreadsheet} disabled={!inRangeRows.length} onClick={() => exportPersonal(items, cats.income, cats.expense, period.range)}>{tr('تصدير الفترة المحددة', 'Export this period')}</Button>
@@ -363,6 +391,7 @@ export default function PersonalPage() {
         </div>
       )}
 
+      {report && <ReportPreview report={report} onClose={() => setReport(null)} />}
       {form && <TransactionSheet key={`${form.kind}-${form.record?.id ?? 'new'}`} initialKind={form.kind} record={form.record} onClose={() => setForm(null)} />}
     </div>
   )

@@ -77,6 +77,9 @@ export const defaultSettings = (): AppSettings => ({
   expenseCategories: EXPENSE_CATEGORIES,
   personalIncomeCategories: PERSONAL_INCOME_CATEGORIES,
   personalExpenseCategories: PERSONAL_EXPENSE_CATEGORIES,
+  clinicTarget: null,
+  clinicBudget: { totalMinor: null, categories: {} },
+  personalBudget: { totalMinor: null, categories: {} },
   widgets: ALL_WIDGETS,
   hiddenWidgets: [],
 })

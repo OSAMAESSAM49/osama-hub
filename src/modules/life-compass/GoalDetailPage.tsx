@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
-  Archive, ArchiveRestore, BookHeart, CheckCircle2, Circle, Landmark, Link2, ListChecks, Pencil, Plus, Trash2, X,
+  Archive, ArchiveRestore, BookHeart, CheckCircle2, Circle, Landmark, Link2, Pencil, Plus, Trash2, X,
 } from 'lucide-react'
 import { confirmAction, toast } from '@/components/common/feedback'
 import {
@@ -10,11 +10,12 @@ import {
 import { useSettings } from '@/hooks/useSettings'
 import { useI18n } from '@/i18n'
 import { goalPriorityLabel, goalStatusLabel, horizonLabel } from '@/i18n/labels'
-import { deleteGoal, goalProgress, goalToTask, isGoalOverdue, milestoneToTask, resolveRef, setMilestoneCompleted, setTaskStatus } from '@/services/data/links'
+import { deleteGoal, goalProgress, goalToTask, isGoalOverdue, resolveRef, setTaskStatus } from '@/services/data/links'
 import { repo, useCollection } from '@/services/data/store'
 import type { CollectionName, GoalStatus, LifeGoal, LifeMilestone, RecordRef, Stored } from '@/types/models'
 import { formatDate, isValidDate } from '@/utils/dates'
 import { GoalForm } from './GoalForm'
+import { PhaseList } from './Phases'
 import { DomainIcon } from './shared'
 
 function MilestoneForm({ goalId, milestone, onClose }: { goalId: string; milestone?: Stored<LifeMilestone>; onClose: () => void }) {
@@ -28,19 +29,19 @@ function MilestoneForm({ goalId, milestone, onClose }: { goalId: string; milesto
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     const errs: typeof errors = {}
-    if (!title.trim()) errs.title = tr('اكتب عنوان المعلم.', 'Enter a title.')
+    if (!title.trim()) errs.title = tr('اكتب عنوان المرحلة.', 'Enter a title.')
     if (dueDate && !isValidDate(dueDate)) errs.due = tr('تاريخ غير صالح.', 'Invalid date.')
     setErrors(errs)
     if (Object.keys(errs).length) return
     const data = { title: title.trim(), description, dueDate: dueDate || null, progress }
     if (milestone) await repo.update('lifeMilestones', milestone.id, data)
-    else await repo.create('lifeMilestones', { ...data, goalId, completed: false, taskId: null })
+    else await repo.create('lifeMilestones', { ...data, goalId, completed: false, taskId: null, order: Date.now() })
     onClose()
   }
 
   const del = async () => {
     if (!milestone) return
-    if (await confirmAction({ title: tr('حذف هذا المعلم؟', 'Delete this milestone?'), body: tr('ستبقى مهمته المرتبطة إن وُجدت.', 'Its linked task, if any, stays.'), danger: true, confirmLabel: tr('حذف', 'Delete') })) {
+    if (await confirmAction({ title: tr('حذف هذه المرحلة؟', 'Delete this phase?'), body: tr('ستبقى مهمته المرتبطة إن وُجدت.', 'Its linked task, if any, stays.'), danger: true, confirmLabel: tr('حذف', 'Delete') })) {
       await repo.remove('lifeMilestones', milestone.id)
       if (milestone.taskId) await repo.update('tasks', milestone.taskId, { related: null }).catch(() => undefined)
       onClose()
@@ -48,7 +49,7 @@ function MilestoneForm({ goalId, milestone, onClose }: { goalId: string; milesto
   }
 
   return (
-    <Sheet open onClose={onClose} title={milestone ? tr('تعديل المعلم', 'Edit milestone') : tr('معلم جديد', 'New milestone')} footer={<FormFooter onCancel={onClose} onDelete={milestone ? () => void del() : undefined} />}>
+    <Sheet open onClose={onClose} title={milestone ? tr('تعديل المرحلة', 'Edit phase') : tr('مرحلة جديدة', 'New phase')} footer={<FormFooter onCancel={onClose} onDelete={milestone ? () => void del() : undefined} />}>
       <form id="sheet-form" onSubmit={(e) => void submit(e)} className="space-y-3" noValidate>
         <Input label={tr('العنوان', 'Title')} value={title} onChange={(e) => setTitle(e.target.value)} error={errors.title} autoFocus={!milestone} />
         <Textarea label={tr('الوصف', 'Description')} value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
@@ -146,7 +147,7 @@ export default function GoalDetailPage() {
   const del = async () => {
     const ok = await confirmAction({
       title: tr('حذف هذا الهدف؟', 'Delete this goal?'),
-      body: tr('ستُحذف معالمه. تبقى الأهداف الفرعية كأهداف مستقلة، وتبقى المهام دون ربط. الأرشفة تحتفظ بكل شيء.', 'Its milestones are removed. Sub-goals become independent and tasks stay, unlinked. Archiving keeps everything.'),
+      body: tr('ستُحذف مراحله. تبقى الأهداف الفرعية كأهداف مستقلة، وتبقى المهام دون ربط. الأرشفة تحتفظ بكل شيء.', 'Its phases are removed. Sub-goals become independent and tasks stay, unlinked. Archiving keeps everything.'),
       danger: true,
       confirmLabel: tr('حذف', 'Delete'),
     })
@@ -202,7 +203,7 @@ export default function GoalDetailPage() {
         <div className="mt-4 flex items-end justify-between gap-3">
           <span className="tnum text-5xl font-bold">{prog.value}%</span>
           <span className="text-end text-sm text-muted">
-            {prog.source === 'milestones' ? tr('متوسط تقدم المعالم', 'Average of milestone progress') : prog.source === 'completed' ? tr('مكتمل', 'Completed') : tr('يُحدَّث يدويًا', 'Updated manually')}
+            {prog.source === 'milestones' ? tr('متوسط تقدم المراحل', 'Average of phase progress') : prog.source === 'completed' ? tr('مكتمل', 'Completed') : tr('يُحدَّث يدويًا', 'Updated manually')}
           </span>
         </div>
         <div className="mt-2"><ProgressBar value={prog.value} tone="gold" label={goal.title} /></div>
@@ -246,27 +247,8 @@ export default function GoalDetailPage() {
       )}
 
       <section className="card p-5">
-        <SectionTitle action={<Button size="sm" icon={Plus} onClick={() => setMsForm({})}>{tr('معلم', 'Milestone')}</Button>}>{tr('المعالم', 'Milestones')}</SectionTitle>
-        {own.length === 0 ? <p className="text-[15px] text-faint">{tr('قسّم الهدف إلى معالم، وعندها يُحسب تقدمه تلقائيًا من متوسطها.', 'Split this goal into milestones, and its progress is then calculated from their average.')}</p> : (
-          <ul className="divide-y divide-line">
-            {own.map((m) => (
-              <li key={m.id} className="flex items-center gap-1 py-1.5">
-                <button type="button" aria-label={m.completed ? tr('إعادة فتح', 'Reopen') : tr('إكمال', 'Complete')} aria-pressed={m.completed} onClick={() => void setMilestoneCompleted(m, !m.completed)} className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-raised">
-                  {m.completed ? <CheckCircle2 className="size-6 fill-lime text-charcoal" /> : <Circle className="size-6 text-faint" />}
-                </button>
-                <button type="button" className="min-w-0 flex-1 text-start" onClick={() => setMsForm({ m })}>
-                  <span className={cx('block truncate font-medium', m.completed && 'text-faint line-through')} dir="auto">{m.title}</span>
-                  <span className="block text-sm text-faint">{m.dueDate ? fmt(m.dueDate) : ''}{!m.completed && m.progress > 0 ? ` · ${m.progress}%` : ''}</span>
-                </button>
-                {m.taskId ? (
-                  <Link to={`/tasks?open=${m.taskId}`} className="shrink-0"><Tag tone="good"><ListChecks className="size-3" />{tr('مهمة', 'Task')}</Tag></Link>
-                ) : (
-                  <Button size="sm" variant="ghost" icon={ListChecks} onClick={async () => { await milestoneToTask(m); toast(tr('أُنشئت مهمة مرتبطة', 'Linked task created')) }}>{tr('إلى مهمة', 'To task')}</Button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+        <SectionTitle>{tr('مراحل الهدف', 'Phases')}</SectionTitle>
+        <PhaseList goalId={goal.id} phases={own} onEdit={(m) => setMsForm({ m })} />
       </section>
 
       <section className="card p-5">

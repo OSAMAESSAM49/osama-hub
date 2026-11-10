@@ -232,6 +232,8 @@ export interface LifeMilestone extends BaseRecord {
   completed: boolean
   progress: number
   taskId: string | null
+  /** Position among the goal's phases. Older phases without it follow their creation order. */
+  order?: number
 }
 export type ReviewType = 'weekly' | 'monthly' | 'annual'
 export interface LifeReview extends BaseRecord {
@@ -261,6 +263,15 @@ export interface FinanceCategory {
   en: string
   archived?: boolean
 }
+export interface ClinicTarget {
+  basis: 'income' | 'net'
+  amountMinor: number
+}
+export interface MonthlyBudget {
+  totalMinor: number | null
+  categories: Record<string, number>
+}
+
 export interface PartnerRate {
   /** Applies to income dated on or after this date. */
   from: DateStr
@@ -285,6 +296,10 @@ export interface AppSettings extends BaseRecord {
   expenseCategories: FinanceCategory[]
   personalIncomeCategories: FinanceCategory[]
   personalExpenseCategories: FinanceCategory[]
+  /** Monthly clinic target, measured on income or on the final net result. */
+  clinicTarget: ClinicTarget | null
+  clinicBudget: MonthlyBudget
+  personalBudget: MonthlyBudget
   widgets: WidgetId[]
   hiddenWidgets: WidgetId[]
 }

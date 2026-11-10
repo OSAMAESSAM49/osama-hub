@@ -52,6 +52,12 @@ Default life domains and bookmark collections use stable ids and are written loc
 - Rates are effective-dated (`{ from, bp }`), so changing the rate does not rewrite past periods.
 - Dates are local `YYYY-MM-DD` strings, so a timezone cannot move a transaction to another day.
 
+## Targets, budgets and reports
+
+- Targets and budgets are monthly and live in settings (`clinicTarget`, `clinicBudget`, `personalBudget`), with optional per-category limits.
+- A budget is "near the limit" from 80%, "ahead of pace" when spending outruns the share of the month passed, and "over" past the limit. A target is "behind" when below the month's pace.
+- Reports are built once as a model ([report.ts](../src/services/export/report.ts)) and rendered both as Excel ([excel.ts](../src/services/export/excel.ts), loaded on demand) and as a print-ready A4 page that the browser saves as PDF, so the two can never disagree.
+
 ## Goal progress rule
 
 With milestones: the average of milestone progress, where a completed milestone counts 100%. Without milestones: the manual percentage. A completed goal is always 100%. Domain satisfaction (1 to 10) is stored separately and is never derived from any of this.
