@@ -21,3 +21,6 @@ reference/
 
 # Local editor and preview configuration.
 .claude/
+
+# TypeScript incremental build cache.
+*.tsbuildinfo
