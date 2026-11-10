@@ -105,7 +105,7 @@ On https://osamaessam49.github.io/osama-hub/, project `osama-hub-eg`, using the 
 - [x] Excel export runs under the production Content Security Policy with no violations (browser, production build)
 - [x] PDF preview renders the clinic and personal reports in Arabic at 390px (browser, production build)
 - [x] Target and budget set through the form; bars, states and remaining amounts shown on the clinic, personal and home screens (browser)
-- [ ] The print dialog itself and "Save as PDF" on a real phone: not run, because the test browser cannot open the print dialog
+- [x] "Save as PDF" from the report preview on a real phone (10 Nov 2026, confirmed by the owner)
 
 ### Life Compass and links
 
