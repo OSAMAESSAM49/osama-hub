@@ -35,6 +35,7 @@ On https://osamaessam49.github.io/osama-hub/, project `osama-hub-eg`, using the 
 - [x] Live rules refuse (403): signed-out reads and writes, another user's reads and writes, unknown collections, the user root document, writes with no server timestamp, hard deletes, and float, negative, zero, text or badly dated money
 - [x] Live rules allow the owner's own data
 - [x] New sign-ups disabled, with one account in the project
+- [x] Personal finance entries sync from a real phone (10 Nov 2026, confirmed by the owner)
 
 ## Not run yet
 
