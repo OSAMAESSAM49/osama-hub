@@ -40,6 +40,10 @@ service cloud.firestore {
         allow read: if isOwner(uid);
         allow create, update: if isOwner(uid) && validEnvelope(docId) && (isTombstone() || validMoney());
       }
+      match /personalTransactions/{docId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validEnvelope(docId) && (isTombstone() || (validMoney() && request.resource.data.kind in ['income', 'expense']));
+      }
       match /partnerPayments/{docId} {
         allow read: if isOwner(uid);
         allow create, update: if isOwner(uid) && validEnvelope(docId) && (isTombstone() || validMoney());

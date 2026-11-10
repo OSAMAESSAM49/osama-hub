@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check, Compass, Lightbulb, Link2, ListChecks, Mic, NotebookPen, SlidersHorizontal, Stethoscope, Target } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check, Compass, Lightbulb, Link2, ListChecks, Mic, NotebookPen, SlidersHorizontal, Stethoscope, Target, Wallet } from 'lucide-react'
 import { Button, cardNumberClass, cx, heroNumberClass, IconButton, ProgressBar, Sheet, Toggle } from '@/components/common/ui'
 import { QuickActionGrid } from '@/components/layout/QuickAdd'
 import { useAuth } from '@/contexts/AuthContext'
@@ -15,6 +15,7 @@ import { formatDate, formatDayLong, inRange, rangeFor, todayStr } from '@/utils/
 import { formatMoney, summarize } from '@/utils/money'
 import { excerpt } from '@/utils/text'
 import { catName } from '../clinic-finance/finance'
+import { personalSummary } from '../personal-finance/personal'
 import { DomainIcon } from '../life-compass/shared'
 
 const isOpen = (t: Task) => t.status === 'pending' || t.status === 'inProgress'
@@ -95,6 +96,35 @@ function FinanceHero() {
         </div>
       </div>
     </Link>
+  )
+}
+
+function PersonalWidget() {
+  const { tr, lang } = useI18n()
+  const { settings } = useSettings()
+  const { items } = useCollection('personalTransactions')
+  const today = todayStr()
+  const { day, month } = useMemo(() => {
+    const mr = rangeFor('month', settings.weekStart, today)
+    return { day: personalSummary(items.filter((t) => t.date === today)), month: personalSummary(items.filter((t) => inRange(t.date, mr))) }
+  }, [items, settings.weekStart, today])
+  return (
+    <WidgetCard title={tr('المالية الشخصية', 'Personal finance')} icon={Wallet} to="/money">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="min-w-0">
+          <div className="text-sm text-muted">{tr('صرفت اليوم', 'Spent today')}</div>
+          <div className="tnum truncate text-xl font-bold">{formatMoney(day.expenses, lang, false)}</div>
+        </div>
+        <div className="min-w-0">
+          <div className="text-sm text-muted">{month.balance >= 0 ? tr('المتبقي هذا الشهر', 'Left this month') : tr('تجاوزت دخل الشهر', 'Over this month')}</div>
+          <div className={cx('tnum truncate text-xl font-bold', month.balance < 0 && 'text-negative')}>{formatMoney(month.balance, lang, false)}</div>
+        </div>
+      </div>
+      <div className="mt-3 flex gap-2">
+        <Link to="/money?add=expense" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-medium text-canvas">{tr('+ مصروف', '+ Expense')}</Link>
+        <Link to="/money?add=income" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-raised px-4 text-sm font-medium">{tr('+ دخل', '+ Income')}</Link>
+      </div>
+    </WidgetCard>
   )
 }
 
@@ -315,6 +345,7 @@ function CompassWidget() {
 
 const WIDGETS: Record<WidgetId, { ar: string; en: string; render: () => ReactNode; wide?: boolean }> = {
   finance: { ar: 'صافي الشهر', en: "Month's net", render: () => <FinanceHero />, wide: true },
+  personal: { ar: 'المالية الشخصية', en: 'Personal finance', render: () => <PersonalWidget /> },
   overview: { ar: 'المهام والأهداف', en: 'Tasks and goals', render: () => <OverviewWidget />, wide: true },
   tasks: { ar: 'المهام القادمة', en: 'Upcoming tasks', render: () => <TasksWidget /> },
   transactions: { ar: 'آخر المعاملات', en: 'Recent transactions', render: () => <TransactionsWidget /> },

@@ -1,5 +1,5 @@
 import {
-  Bookmark, BookOpen, Compass, Home, Lightbulb, ListChecks, Mic, NotebookPen, Settings, Shield, Stethoscope, type LucideIcon,
+  Bookmark, BookOpen, Compass, Home, Wallet, Lightbulb, ListChecks, Mic, NotebookPen, Settings, Shield, Stethoscope, type LucideIcon,
 } from 'lucide-react'
 
 export interface ModuleDef {
@@ -18,6 +18,7 @@ export interface ModuleDef {
 export const MODULES: ModuleDef[] = [
   { id: 'home', path: '/', icon: Home, ar: 'الرئيسية', en: 'Home', descAr: 'نظرة على يومك', descEn: 'Your day at a glance', bg: '#111114', fg: '#fff' },
   { id: 'clinic', path: '/clinic', icon: Stethoscope, ar: 'مالية العيادة', en: 'Clinic Finance', descAr: 'الإيرادات والمصروفات والشريك', descEn: 'Income, expenses and partner', bg: '#3A3FF0', fg: '#fff' },
+  { id: 'money', path: '/money', icon: Wallet, ar: 'المالية الشخصية', en: 'Personal Finance', descAr: 'مصروفك ودخلك اليومي', descEn: 'Your daily spending and income', bg: '#A8E6CF', fg: '#111114' },
   { id: 'tasks', path: '/tasks', icon: ListChecks, ar: 'المهام', en: 'Tasks', descAr: 'ما يجب إنجازه', descEn: 'What needs doing', bg: '#C8FF2E', fg: '#111114' },
   { id: 'notes', path: '/notes', icon: NotebookPen, ar: 'الملاحظات', en: 'Quick Notes', descAr: 'دوّن بسرعة', descEn: 'Capture fast', bg: '#EE8A4B', fg: '#111114' },
   { id: 'ideas', path: '/ideas', icon: Lightbulb, ar: 'أفكار المحتوى', en: 'Content Ideas', descAr: 'مساحتك الإبداعية', descEn: 'Your creative workspace', bg: '#7D5CE6', fg: '#fff' },

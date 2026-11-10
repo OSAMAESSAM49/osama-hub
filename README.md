@@ -1,6 +1,6 @@
 # OSAMA HUB
 
-A private, all-in-one personal operating system: dental clinic finance, notes, tasks, content ideas, voice notes, bookmarks, a reference vault, Daily Deen and Life Compass. Arabic-first with full RTL, and English as an alternative. Installable as a PWA and usable offline.
+A private, all-in-one personal operating system: dental clinic finance, personal finance, notes, tasks, content ideas, voice notes, bookmarks, a reference vault, Daily Deen and Life Compass. Arabic-first with full RTL, and English as an alternative. Installable as a PWA and usable offline.
 
 **Stack:** React 19, TypeScript, Vite, Tailwind CSS 4, Firebase (Auth, Firestore, optional Storage), GitHub Pages. No paid server and no Cloud Functions.
 

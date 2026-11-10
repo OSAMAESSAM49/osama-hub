@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowDownCircle, ArrowUpCircle, Compass, Lightbulb, Link2, ListChecks, Mic, NotebookPen, type LucideIcon } from 'lucide-react'
+import { ArrowDownCircle, ArrowUpCircle, Coins, Compass, ShoppingBag, Lightbulb, Link2, ListChecks, Mic, NotebookPen, type LucideIcon } from 'lucide-react'
 import { Sheet } from '@/components/common/ui'
 import { useI18n } from '@/i18n'
 
@@ -14,8 +14,10 @@ interface Action {
 
 export const QUICK_ACTIONS: Action[] = [
   { icon: NotebookPen, ar: 'ملاحظة', en: 'Note', to: '/notes?new=1', bg: '#EE8A4B', fg: '#111114' },
-  { icon: ArrowDownCircle, ar: 'إيراد', en: 'Income', to: '/clinic?add=income', bg: '#C8FF2E', fg: '#111114' },
-  { icon: ArrowUpCircle, ar: 'مصروف', en: 'Expense', to: '/clinic?add=expense', bg: '#3A3FF0', fg: '#fff' },
+  { icon: ArrowDownCircle, ar: 'إيراد العيادة', en: 'Clinic income', to: '/clinic?add=income', bg: '#C8FF2E', fg: '#111114' },
+  { icon: ArrowUpCircle, ar: 'مصروف العيادة', en: 'Clinic expense', to: '/clinic?add=expense', bg: '#3A3FF0', fg: '#fff' },
+  { icon: ShoppingBag, ar: 'مصروف شخصي', en: 'My expense', to: '/money?add=expense', bg: '#A8E6CF', fg: '#111114' },
+  { icon: Coins, ar: 'دخل شخصي', en: 'My income', to: '/money?add=income', bg: '#DDF5E7', fg: '#111114' },
   { icon: ListChecks, ar: 'مهمة', en: 'Task', to: '/tasks?new=1', bg: '#111114', fg: '#fff' },
   { icon: Mic, ar: 'تسجيل صوتي', en: 'Voice note', to: '/voice?record=1', bg: '#D94A7B', fg: '#fff' },
   { icon: Link2, ar: 'حفظ رابط', en: 'Save link', to: '/links?new=1', bg: '#2E9C8F', fg: '#fff' },

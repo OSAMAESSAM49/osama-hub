@@ -317,7 +317,10 @@ export default function GoalDetailPage() {
       <section className="card p-5">
         <SectionTitle action={<Button size="sm" icon={Link2} onClick={() => setLinkForm(true)}>{tr('ربط', 'Link')}</Button>}>{tr('مراجع مرتبطة', 'Linked references')}</SectionTitle>
         {goal.domainId === 'finance' && (
-          <Link to="/clinic?tab=reports" className="mb-1 flex items-center gap-2 rounded-2xl px-2 py-2 text-accent hover:bg-raised"><Landmark className="size-4" />{tr('تقارير مالية العيادة', 'Clinic finance reports')}</Link>
+          <>
+            <Link to="/clinic?tab=reports" className="mb-1 flex items-center gap-2 rounded-2xl px-2 py-2 text-accent hover:bg-raised"><Landmark className="size-4" />{tr('تقارير مالية العيادة', 'Clinic finance reports')}</Link>
+            <Link to="/money" className="mb-1 flex items-center gap-2 rounded-2xl px-2 py-2 text-accent hover:bg-raised"><Landmark className="size-4" />{tr('المالية الشخصية', 'Personal finance')}</Link>
+          </>
         )}
         {goal.domainId === 'deen' && (
           <Link to="/deen" className="mb-1 flex items-center gap-2 rounded-2xl px-2 py-2 text-accent hover:bg-raised"><DomainIcon name="BookOpen" className="size-4" />{tr('الزاد اليومي', 'Daily Deen')}</Link>

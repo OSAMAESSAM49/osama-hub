@@ -12,7 +12,7 @@ Status of the build as handed over.
 npm test
 ```
 
-Runs 70 tests: finance, dates, search, CSV, the sync engine, backup, links, and the Deen dataset.
+Runs 74 tests: finance, dates, search, CSV, the sync engine, backup, links, and the Deen dataset.
 
 ```bash
 npm run test:rules
@@ -90,6 +90,12 @@ On https://osamaessam49.github.io/osama-hub/, project `osama-hub-eg`, using the 
 - [x] Record, pause, resume, stop, preview, save
 - [x] Audio stored in IndexedDB before metadata, and labelled "This device only"
 - [x] Playback from local storage
+
+### Personal finance
+
+- [x] Income and spending totals, balance, and daily average over elapsed days only (unit)
+- [x] Add an expense and an income through the form, including Arabic digits and save & add another (browser)
+- [x] List, insights, dashboard card, settings categories and search, at 390px and 320px with no overflow (browser)
 
 ### Life Compass and links
 

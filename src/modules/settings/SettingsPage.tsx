@@ -21,7 +21,7 @@ import { bpToPercent, percentToBp, rateOn } from '@/utils/money'
 import { newId } from '@/utils/text'
 import { exportMonthly, exportPartnerStatement, exportTransactions, exportYearly } from '../clinic-finance/finance'
 
-type Section = 'account' | 'general' | 'clinic' | 'data' | 'app'
+type Section = 'account' | 'general' | 'clinic' | 'personal' | 'data' | 'app'
 
 const Block = ({ title, children, hint }: { title: string; children: ReactNode; hint?: string }) => (
   <section className="card space-y-3 p-5">
@@ -226,6 +226,20 @@ function PartnerRateEditor() {
         ))}
       </ul>
     </Block>
+  )
+}
+
+function PersonalSection() {
+  const { tr } = useI18n()
+  const { settings, save } = useSettings()
+  const rows = useCollection('personalTransactions').items
+  const usedIn = useMemo(() => new Set(rows.filter((r) => r.kind === 'income').map((r) => r.categoryId)), [rows])
+  const usedEx = useMemo(() => new Set(rows.filter((r) => r.kind === 'expense').map((r) => r.categoryId)), [rows])
+  return (
+    <div className="space-y-4">
+      <CategoryEditor title={tr('تصنيفات مصروفك الشخصي', 'Personal spending categories')} list={settings.personalExpenseCategories} used={usedEx} onChange={(personalExpenseCategories) => void save({ personalExpenseCategories })} />
+      <CategoryEditor title={tr('مصادر دخلك الشخصي', 'Personal income sources')} list={settings.personalIncomeCategories} used={usedIn} onChange={(personalIncomeCategories) => void save({ personalIncomeCategories })} />
+    </div>
   )
 }
 
@@ -458,6 +472,7 @@ function AppSection() {
             ['A', tr('إضافة سريعة', 'Quick add')],
             ['G H', tr('الرئيسية', 'Home')],
             ['G C', tr('مالية العيادة', 'Clinic Finance')],
+            ['G P', tr('المالية الشخصية', 'Personal Finance')],
             ['G T', tr('المهام', 'Tasks')],
             ['G N', tr('الملاحظات', 'Notes')],
             ['G I', tr('أفكار المحتوى', 'Content Ideas')],
@@ -505,6 +520,7 @@ export default function SettingsPage() {
           { value: 'account', label: tr('الحساب', 'Account') },
           { value: 'general', label: tr('عام', 'General'), icon: Languages },
           { value: 'clinic', label: tr('العيادة', 'Clinic') },
+          { value: 'personal', label: tr('الشخصية', 'Personal') },
           { value: 'data', label: tr('البيانات', 'Data') },
           { value: 'app', label: tr('التطبيق', 'App') },
         ]}
@@ -512,6 +528,7 @@ export default function SettingsPage() {
       {section === 'account' && <AccountSection />}
       {section === 'general' && <GeneralSection />}
       {section === 'clinic' && <ClinicSection />}
+      {section === 'personal' && <PersonalSection />}
       {section === 'data' && <DataSection />}
       {section === 'app' && <AppSection />}
     </div>

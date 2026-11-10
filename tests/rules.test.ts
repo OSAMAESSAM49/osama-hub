@@ -96,6 +96,16 @@ describe('record validation', () => {
     await assertSucceeds(setDoc(doc(d, 'users/alice/partnerPayments/g'), income('g')))
   })
 
+  it('validates personal money entries the same way, plus their kind', async () => {
+    const d = db('alice')
+    const entry = (id: string, over: Record<string, unknown> = {}) => ({ ...income(id), kind: 'expense', ...over })
+    await assertSucceeds(setDoc(doc(d, 'users/alice/personalTransactions/a'), entry('a')))
+    await assertSucceeds(setDoc(doc(d, 'users/alice/personalTransactions/b'), entry('b', { kind: 'income' })))
+    await assertFails(setDoc(doc(d, 'users/alice/personalTransactions/c'), entry('c', { kind: 'loan' })))
+    await assertFails(setDoc(doc(d, 'users/alice/personalTransactions/e'), entry('e', { amountMinor: 9.99 })))
+    await assertFails(getDoc(doc(db('bob'), 'users/alice/personalTransactions/a')))
+  })
+
   it('allows soft deletion by tombstone and refuses hard deletion', async () => {
     const d = db('alice')
     await assertSucceeds(setDoc(doc(d, 'users/alice/income/i1'), income('i1')))

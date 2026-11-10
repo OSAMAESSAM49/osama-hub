@@ -167,7 +167,7 @@ export function AppShell() {
   }, [location.pathname])
 
   useEffect(() => {
-    const GO: Record<string, string> = { h: '/', t: '/tasks', c: '/clinic', n: '/notes', i: '/ideas', v: '/voice', l: '/links', d: '/deen', m: '/compass' }
+    const GO: Record<string, string> = { h: '/', t: '/tasks', c: '/clinic', p: '/money', n: '/notes', i: '/ideas', v: '/voice', l: '/links', d: '/deen', m: '/compass' }
     let pendingG = 0
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {

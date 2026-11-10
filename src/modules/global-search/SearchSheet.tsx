@@ -52,6 +52,10 @@ function runSearch(query: string, lang: 'ar' | 'en'): Group[] {
     id: x.id, title: x.description || x.supplier || formatMoney(x.amountMinor, lang),
     body: `${x.supplier} ${x.notes}`, detail: `${formatMoney(x.amountMinor, lang)} · ${x.date}`, path: `/clinic?tab=expenses&open=${x.id}`,
   })))
+  add('personal', t('المالية الشخصية', 'Personal finance'), getAll('personalTransactions').map((x) => ({
+    id: x.id, title: x.description || formatMoney(x.amountMinor, lang),
+    body: `${x.notes} ${x.paymentMethod}`, detail: `${x.kind === 'income' ? '+' : '−'}${formatMoney(x.amountMinor, lang)} · ${x.date}`, path: `/money?open=${x.id}`,
+  })))
   add('ideas', t('أفكار المحتوى', 'Content ideas'), getAll('contentIdeas').map((x) => ({
     id: x.id, title: x.title, body: `${x.description} ${x.notes} ${x.tags.join(' ')}`, detail: excerpt(x.description, 80), path: `/ideas?open=${x.id}`,
   })))

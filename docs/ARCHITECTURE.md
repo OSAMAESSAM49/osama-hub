@@ -65,6 +65,7 @@ All are under `users/{uid}/`. Types are in [src/types/models.ts](../src/types/mo
 | `settings` | Singleton `app`: profile, preferences, categories, rates, widgets | Envelope |
 | `notes` | Quick notes | Envelope |
 | `income`, `expenses`, `partnerPayments` | Clinic finance | Positive integer money and a valid date, unless a tombstone |
+| `personalTransactions` | Personal spending and income, kept apart from the clinic | Positive integer money, a valid date and a kind of `income` or `expense`, unless a tombstone |
 | `contentIdeas` | Content planning. `taskId` prevents duplicate conversion | Envelope |
 | `vaultItems` | Reference data | Envelope |
 | `tasks` | `related` references a goal, milestone or idea | Envelope |

@@ -192,6 +192,8 @@
     }
   }
   .tnum {
+    /* Never split a number across lines; large figures shrink to fit instead. */
+    overflow-wrap: normal;
     font-feature-settings: 'tnum' 1, 'lnum' 1;
     font-variant-numeric: tabular-nums lining-nums;
   }

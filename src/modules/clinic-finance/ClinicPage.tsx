@@ -5,12 +5,13 @@ import { confirmDelete, toast } from '@/components/common/feedback'
 import {
   Button, Chip, ChipRow, ComboInput, cx, EmptyState, heroNumberClass, FormFooter, Input, ListSkeleton, PageHeader, ProgressBar, SectionTitle, Segmented, Select, Sheet, Stat, SyncBadge, Textarea,
 } from '@/components/common/ui'
+import { CategoryBars, PeriodPicker, usePeriod } from '@/components/finance/shared'
 import { useParamOnce } from '@/hooks/useParamOnce'
 import { useSettings } from '@/hooks/useSettings'
 import { useI18n } from '@/i18n'
 import { repo, useCollection } from '@/services/data/store'
 import type { Expense, Income, PartnerPayment, Stored } from '@/types/models'
-import { type DateRange, endOfYear, formatDate, inRange, isValidDate, rangeFor, type RangePreset, startOfYear, todayStr, yearKey } from '@/utils/dates'
+import { type DateRange, endOfYear, formatDate, inRange, isValidDate, rangeFor, startOfYear, todayStr, yearKey } from '@/utils/dates'
 import { bpToPercent, formatMoney, MAX_AMOUNT_MINOR, minorToDecimal, parseAmount, partnerBalance, partnerShare, rateOn, sum, summarize } from '@/utils/money'
 import { matches } from '@/utils/text'
 import { catName, categoryTotals, exportMonthly, exportPartnerStatement, exportTransactions, exportYearly, periodRows, trendBuckets } from './finance'
@@ -190,38 +191,6 @@ function PaymentForm({ payment, balance, onClose }: { payment?: Stored<PartnerPa
         <p className="text-sm text-faint">{tr('الدفعة تسدد التزامًا قائمًا، لذلك لا تُخصم مرة أخرى من صافي النتيجة.', 'A payment settles an existing liability, so it is not deducted from the net result again.')}</p>
       </form>
     </Sheet>
-  )
-}
-
-// ── Period control ──
-function usePeriod(initial: RangePreset = 'month') {
-  const { settings } = useSettings()
-  const [preset, setPreset] = useState<RangePreset>(initial)
-  const today = todayStr()
-  const [custom, setCustom] = useState<DateRange>({ from: startOfYear(today), to: today })
-  const range = useMemo(() => (preset === 'custom' ? custom : rangeFor(preset, settings.weekStart, today)), [preset, custom, settings.weekStart, today])
-  return { preset, setPreset, custom, setCustom, range }
-}
-
-function PeriodPicker({ p }: { p: ReturnType<typeof usePeriod> }) {
-  const { tr } = useI18n()
-  const options: [RangePreset, string][] = [
-    ['today', tr('اليوم', 'Today')], ['yesterday', tr('أمس', 'Yesterday')], ['week', tr('هذا الأسبوع', 'This week')],
-    ['month', tr('هذا الشهر', 'This month')], ['year', tr('هذه السنة', 'This year')], ['custom', tr('مخصص', 'Custom')],
-  ]
-  const invalid = p.preset === 'custom' && p.custom.from > p.custom.to
-  return (
-    <div className="mb-4">
-      <ChipRow>
-        {options.map(([v, label]) => <Chip key={v} active={p.preset === v} onClick={() => p.setPreset(v)}>{label}</Chip>)}
-      </ChipRow>
-      {p.preset === 'custom' && (
-        <div className="mt-2 grid max-w-md grid-cols-2 gap-2">
-          <Input aria-label={tr('من', 'From')} label={tr('من', 'From')} type="date" value={p.custom.from} onChange={(e) => p.setCustom({ ...p.custom, from: e.target.value })} />
-          <Input aria-label={tr('إلى', 'To')} label={tr('إلى', 'To')} type="date" value={p.custom.to} onChange={(e) => p.setCustom({ ...p.custom, to: e.target.value })} error={invalid ? tr('يجب أن يكون بعد تاريخ البداية.', 'Must be after the start.') : null} />
-        </div>
-      )}
-    </div>
   )
 }
 
@@ -498,30 +467,6 @@ function PartnerTab({ incomes, expenses, payments, onPay, onEditPayment }: { inc
 }
 
 // ── Reports ──
-function CategoryBars({ title, rows, lang }: { title: string; rows: ReturnType<typeof categoryTotals>; lang: 'ar' | 'en' }) {
-  const { tr } = useI18n()
-  return (
-    <section className="card p-5">
-      <SectionTitle>{title}</SectionTitle>
-      {rows.length === 0 ? <p className="text-[15px] text-faint">{tr('لا بيانات في هذه الفترة.', 'No data in this period.')}</p> : (
-        <ul className="space-y-3">
-          {rows.map((r) => (
-            <li key={r.id}>
-              <div className="mb-1 flex items-baseline justify-between gap-3 text-[15px]">
-                <span className="truncate">{r.name}</span>
-                <span className="tnum shrink-0 font-bold">{formatMoney(r.amount, lang, false)} <span className="text-xs font-normal text-faint">{r.share.toFixed(0)}%</span></span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-raised">
-                <div className="h-full rounded-full" style={{ width: `${r.share}%`, background: 'var(--c-series-1)' }} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  )
-}
-
 function Reports({ incomes, expenses, payments }: { incomes: Stored<Income>[]; expenses: Stored<Expense>[]; payments: Stored<PartnerPayment>[] }) {
   const { tr, lang } = useI18n()
   const { settings } = useSettings()
@@ -555,8 +500,8 @@ function Reports({ incomes, expenses, payments }: { incomes: Stored<Income>[]; e
         <Suspense fallback={<div className="skeleton h-48" />}><FinanceCharts.Net data={trend} /></Suspense>
       </section>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <CategoryBars title={tr('الإيرادات حسب التصنيف', 'Income by category')} rows={categoryTotals(inc, settings.incomeCategories)} lang={lang} />
-        <CategoryBars title={tr('المصروفات حسب التصنيف', 'Expenses by category')} rows={categoryTotals(exp, settings.expenseCategories)} lang={lang} />
+        <CategoryBars title={tr('الإيرادات حسب التصنيف', 'Income by category')} rows={categoryTotals(inc, settings.incomeCategories)} />
+        <CategoryBars title={tr('المصروفات حسب التصنيف', 'Expenses by category')} rows={categoryTotals(exp, settings.expenseCategories)} />
       </div>
       <section className="card p-5">
         <SectionTitle>{tr('المقارنة التفصيلية', 'Detailed comparison')}</SectionTitle>

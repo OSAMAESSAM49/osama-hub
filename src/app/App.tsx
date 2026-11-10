@@ -11,6 +11,7 @@ const DashboardPage = lazy(() => import('@/modules/dashboard/DashboardPage'))
 const MorePage = lazy(() => import('@/modules/dashboard/MorePage'))
 const NotesPage = lazy(() => import('@/modules/notes/NotesPage'))
 const ClinicPage = lazy(() => import('@/modules/clinic-finance/ClinicPage'))
+const PersonalPage = lazy(() => import('@/modules/personal-finance/PersonalPage'))
 const IdeasPage = lazy(() => import('@/modules/content-ideas/IdeasPage'))
 const VaultPage = lazy(() => import('@/modules/data-vault/VaultPage'))
 const TasksPage = lazy(() => import('@/modules/tasks/TasksPage'))
@@ -74,6 +75,7 @@ function Gate() {
         <Route path="more" element={<MorePage />} />
         <Route path="notes" element={<NotesPage />} />
         <Route path="clinic" element={<ClinicPage />} />
+        <Route path="money" element={<PersonalPage />} />
         <Route path="ideas" element={<IdeasPage />} />
         <Route path="vault" element={<VaultPage />} />
         <Route path="tasks" element={<TasksPage />} />

@@ -480,7 +480,9 @@ export function heroNumberClass(text: string) {
 }
 
 export function cardNumberClass(text: string) {
-  return text.length <= 9 ? 'text-[min(1.25rem,5vw)]' : 'text-[min(1.05rem,4vw)]'
+  if (text.length <= 9) return 'text-[min(1.25rem,5vw)]'
+  if (text.length <= 12) return 'text-[min(1.05rem,4vw)]'
+  return 'text-[min(0.95rem,3.4vw)]'
 }
 
 export function Stat({ label, value, tone, sub }: { label: string; value: string; tone?: 'good' | 'bad'; sub?: string }) {

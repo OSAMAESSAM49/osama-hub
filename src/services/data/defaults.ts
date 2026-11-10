@@ -24,7 +24,37 @@ export const EXPENSE_CATEGORIES = [
   { id: 'other', ar: 'أخرى', en: 'Other' },
 ]
 
-export const ALL_WIDGETS: WidgetId[] = ['finance', 'overview', 'tasks', 'deen', 'transactions', 'compass', 'notes', 'ideas', 'bookmarks', 'voice']
+export const PERSONAL_INCOME_CATEGORIES = [
+  { id: 'clinic', ar: 'دخل من العيادة', en: 'From the clinic' },
+  { id: 'salary', ar: 'راتب', en: 'Salary' },
+  { id: 'freelance', ar: 'عمل إضافي', en: 'Side work' },
+  { id: 'teaching', ar: 'تدريس ومحاضرات', en: 'Teaching' },
+  { id: 'gift', ar: 'هدية', en: 'Gift' },
+  { id: 'investment', ar: 'استثمار', en: 'Investment' },
+  { id: 'refund', ar: 'استرداد', en: 'Refund' },
+  { id: 'other', ar: 'أخرى', en: 'Other' },
+]
+
+export const PERSONAL_EXPENSE_CATEGORIES = [
+  { id: 'food', ar: 'أكل ومطاعم', en: 'Food & dining' },
+  { id: 'groceries', ar: 'طلبات البيت', en: 'Groceries' },
+  { id: 'transport', ar: 'مواصلات', en: 'Transport' },
+  { id: 'fuel', ar: 'بنزين وسيارة', en: 'Fuel & car' },
+  { id: 'bills', ar: 'فواتير', en: 'Bills' },
+  { id: 'home', ar: 'البيت', en: 'Home' },
+  { id: 'kids', ar: 'الأولاد', en: 'Kids' },
+  { id: 'family', ar: 'الأسرة', en: 'Family' },
+  { id: 'health', ar: 'صحة', en: 'Health' },
+  { id: 'education', ar: 'تعليم', en: 'Education' },
+  { id: 'shopping', ar: 'تسوق وملابس', en: 'Shopping' },
+  { id: 'fun', ar: 'ترفيه وخروجات', en: 'Fun & outings' },
+  { id: 'charity', ar: 'صدقة وزكاة', en: 'Charity' },
+  { id: 'gifts', ar: 'هدايا', en: 'Gifts' },
+  { id: 'subscriptions', ar: 'اشتراكات', en: 'Subscriptions' },
+  { id: 'other', ar: 'أخرى', en: 'Other' },
+]
+
+export const ALL_WIDGETS: WidgetId[] = ['finance', 'personal', 'overview', 'tasks', 'deen', 'transactions', 'compass', 'notes', 'ideas', 'bookmarks', 'voice']
 
 const EPOCH = '2000-01-01T00:00:00.000Z'
 
@@ -45,6 +75,8 @@ export const defaultSettings = (): AppSettings => ({
   partnerRates: [{ from: '0001-01-01', bp: 500 }],
   incomeCategories: INCOME_CATEGORIES,
   expenseCategories: EXPENSE_CATEGORIES,
+  personalIncomeCategories: PERSONAL_INCOME_CATEGORIES,
+  personalExpenseCategories: PERSONAL_EXPENSE_CATEGORIES,
   widgets: ALL_WIDGETS,
   hiddenWidgets: [],
 })

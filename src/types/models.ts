@@ -57,6 +57,17 @@ export interface PartnerPayment extends BaseRecord {
   notes: string
 }
 
+// ── Personal finance (kept apart from the clinic) ──
+export interface PersonalTransaction extends BaseRecord {
+  kind: 'income' | 'expense'
+  amountMinor: number
+  date: DateStr
+  categoryId: string
+  description: string
+  paymentMethod: string
+  notes: string
+}
+
 // ── Content ideas ──
 export type IdeaStatus = 'new' | 'planned' | 'inProgress' | 'published' | 'archived'
 export type Priority3 = 'low' | 'medium' | 'high'
@@ -257,7 +268,7 @@ export interface PartnerRate {
   bp: number
 }
 export type WidgetId =
-  | 'finance' | 'overview' | 'transactions' | 'tasks' | 'notes' | 'bookmarks' | 'ideas' | 'voice' | 'deen' | 'compass'
+  | 'finance' | 'personal' | 'overview' | 'transactions' | 'tasks' | 'notes' | 'bookmarks' | 'ideas' | 'voice' | 'deen' | 'compass'
 
 export interface AppSettings extends BaseRecord {
   displayName: string
@@ -272,6 +283,8 @@ export interface AppSettings extends BaseRecord {
   partnerRates: PartnerRate[]
   incomeCategories: FinanceCategory[]
   expenseCategories: FinanceCategory[]
+  personalIncomeCategories: FinanceCategory[]
+  personalExpenseCategories: FinanceCategory[]
   widgets: WidgetId[]
   hiddenWidgets: WidgetId[]
 }
@@ -282,6 +295,7 @@ export interface CollectionMap {
   income: Income
   expenses: Expense
   partnerPayments: PartnerPayment
+  personalTransactions: PersonalTransaction
   contentIdeas: ContentIdea
   vaultItems: VaultItem
   tasks: Task
@@ -302,7 +316,7 @@ export interface CollectionMap {
 export type CollectionName = keyof CollectionMap
 
 export const COLLECTIONS = [
-  'settings', 'notes', 'income', 'expenses', 'partnerPayments', 'contentIdeas', 'vaultItems', 'tasks',
+  'settings', 'notes', 'income', 'expenses', 'partnerPayments', 'personalTransactions', 'contentIdeas', 'vaultItems', 'tasks',
   'voiceNotes', 'bookmarks', 'bookmarkCollections', 'favoriteVerses', 'favoriteHadith', 'deenHistory',
   'deenTracking', 'lifeDomains', 'lifeVision', 'lifeGoals', 'lifeMilestones', 'lifeReviews', 'lifeJournal',
 ] as const satisfies readonly CollectionName[]
