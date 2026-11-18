@@ -54,9 +54,20 @@ export const PERSONAL_EXPENSE_CATEGORIES = [
   { id: 'other', ar: 'أخرى', en: 'Other' },
 ]
 
-export const ALL_WIDGETS: WidgetId[] = ['finance', 'personal', 'overview', 'tasks', 'deen', 'transactions', 'compass', 'notes', 'ideas', 'bookmarks', 'voice']
+export const ALL_WIDGETS: WidgetId[] = ['life', 'finance', 'personal', 'overview', 'tasks', 'deen', 'transactions', 'compass', 'notes', 'ideas', 'bookmarks', 'voice']
 
 const EPOCH = '2000-01-01T00:00:00.000Z'
+
+/**
+ * The saved widget order with any newer widgets added. The life card goes first, as the owner asked;
+ * other new widgets join at the end so an arranged home screen is not reshuffled.
+ */
+export function widgetOrder(saved: WidgetId[]): WidgetId[] {
+  const list = saved.filter((w) => ALL_WIDGETS.includes(w))
+  if (!list.includes('life')) list.unshift('life')
+  for (const w of ALL_WIDGETS) if (!list.includes(w)) list.push(w)
+  return list
+}
 
 export const defaultSettings = (): AppSettings => ({
   id: 'app',
@@ -80,6 +91,9 @@ export const defaultSettings = (): AppSettings => ({
   clinicTarget: null,
   clinicBudget: { totalMinor: null, categories: {} },
   personalBudget: { totalMinor: null, categories: {} },
+  birthDate: null,
+  lifeSpanMin: 60,
+  lifeSpanMax: 70,
   widgets: ALL_WIDGETS,
   hiddenWidgets: [],
 })

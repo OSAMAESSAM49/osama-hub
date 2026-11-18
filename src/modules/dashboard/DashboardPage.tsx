@@ -6,7 +6,8 @@ import { QuickActionGrid } from '@/components/layout/QuickAdd'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSettings } from '@/hooks/useSettings'
 import { useI18n } from '@/i18n'
-import { ALL_WIDGETS } from '@/services/data/defaults'
+import { widgetOrder } from '@/services/data/defaults'
+import { LifeCard } from '@/components/dashboard/LifeCard'
 import { bookName, dailySelection, loadHadith, loadVerse, type Hadith, type Verse } from '@/services/data/deen'
 import { goalProgress, isGoalOverdue, setTaskStatus } from '@/services/data/links'
 import { useCollection } from '@/services/data/store'
@@ -354,6 +355,7 @@ function CompassWidget() {
 }
 
 const WIDGETS: Record<WidgetId, { ar: string; en: string; render: () => ReactNode; wide?: boolean }> = {
+  life: { ar: 'رحلة العمر', en: 'Life in days', render: () => <LifeCard />, wide: true },
   finance: { ar: 'صافي الشهر', en: "Month's net", render: () => <FinanceHero />, wide: true },
   personal: { ar: 'المالية الشخصية', en: 'Personal finance', render: () => <PersonalWidget /> },
   overview: { ar: 'المهام والأهداف', en: 'Tasks and goals', render: () => <OverviewWidget />, wide: true },
@@ -370,8 +372,7 @@ const WIDGETS: Record<WidgetId, { ar: string; en: string; render: () => ReactNod
 function CustomizeSheet({ onClose }: { onClose: () => void }) {
   const { tr, lang } = useI18n()
   const { settings, save } = useSettings()
-  const order = settings.widgets.filter((w) => WIDGETS[w])
-  for (const w of ALL_WIDGETS) if (!order.includes(w)) order.push(w)
+  const order = widgetOrder(settings.widgets).filter((w) => WIDGETS[w])
   const move = (i: number, d: number) => {
     const next = [...order]
     const [item] = next.splice(i, 1)
@@ -403,11 +404,7 @@ export default function DashboardPage() {
   const { tr } = useI18n()
   const { settings } = useSettings()
   const [customize, setCustomize] = useState(false)
-  const order = useMemo(() => {
-    const list = settings.widgets.filter((w) => WIDGETS[w])
-    for (const w of ALL_WIDGETS) if (!list.includes(w)) list.push(w)
-    return list.filter((w) => !settings.hiddenWidgets.includes(w))
-  }, [settings.widgets, settings.hiddenWidgets])
+  const order = useMemo(() => widgetOrder(settings.widgets).filter((w) => WIDGETS[w] && !settings.hiddenWidgets.includes(w)), [settings.widgets, settings.hiddenWidgets])
 
   return (
     <div className="fade-in">

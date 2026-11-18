@@ -279,7 +279,7 @@ export interface PartnerRate {
   bp: number
 }
 export type WidgetId =
-  | 'finance' | 'personal' | 'overview' | 'transactions' | 'tasks' | 'notes' | 'bookmarks' | 'ideas' | 'voice' | 'deen' | 'compass'
+  | 'life' | 'finance' | 'personal' | 'overview' | 'transactions' | 'tasks' | 'notes' | 'bookmarks' | 'ideas' | 'voice' | 'deen' | 'compass'
 
 export interface AppSettings extends BaseRecord {
   displayName: string
@@ -300,6 +300,10 @@ export interface AppSettings extends BaseRecord {
   clinicTarget: ClinicTarget | null
   clinicBudget: MonthlyBudget
   personalBudget: MonthlyBudget
+  /** Date of birth for the life card, or null until entered. Kept in the owner's private settings. */
+  birthDate: DateStr | null
+  lifeSpanMin: number
+  lifeSpanMax: number
   widgets: WidgetId[]
   hiddenWidgets: WidgetId[]
 }

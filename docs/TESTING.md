@@ -12,7 +12,7 @@ Status of the build as handed over.
 npm test
 ```
 
-Runs 96 tests: finance, dates, search, CSV, the sync engine, backup, links, and the Deen dataset.
+Runs 110 tests: finance, dates, life in days, search, CSV, reports, the sync engine, backup, links, and the Deen dataset.
 
 ```bash
 npm run test:rules
@@ -106,6 +106,12 @@ On https://osamaessam49.github.io/osama-hub/, project `osama-hub-eg`, using the 
 - [x] PDF preview renders the clinic and personal reports in Arabic at 390px (browser, production build)
 - [x] Target and budget set through the form; bars, states and remaining amounts shown on the clinic, personal and home screens (browser)
 - [x] "Save as PDF" from the report preview on a real phone (10 Nov 2026, confirmed by the owner)
+
+### Life in days (home)
+
+- [x] Calendar age, days lived, days left to the lower and upper ages, leap years and 29 February (unit)
+- [x] The card goes first on home for an existing saved order, and stays where the owner moves it (unit)
+- [x] Date of birth entered through the card; bar, tiles and year grid shown at 375px and 320px, light and dark, with no overflow (browser)
 
 ### Life Compass and links
 

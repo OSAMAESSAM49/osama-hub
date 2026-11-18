@@ -58,6 +58,10 @@ Default life domains and bookmark collections use stable ids and are written loc
 - A budget is "near the limit" from 80%, "ahead of pace" when spending outruns the share of the month passed, and "over" past the limit. A target is "behind" when below the month's pace.
 - Reports are built once as a model ([report.ts](../src/services/export/report.ts)) and rendered both as Excel ([excel.ts](../src/services/export/excel.ts), loaded on demand) and as a print-ready A4 page that the browser saves as PDF, so the two can never disagree.
 
+## Life in days
+
+The home card reads `birthDate`, `lifeSpanMin` and `lifeSpanMax` from the owner's private settings; nothing personal is in the code. Ages are calendar ages (29 February becomes 28 February in other years), and the bar runs from birth to the upper age, with the lower-to-upper band marked ([life.ts](../src/utils/life.ts)).
+
 ## Goal progress rule
 
 With milestones: the average of milestone progress, where a completed milestone counts 100%. Without milestones: the manual percentage. A completed goal is always 100%. Domain satisfaction (1 to 10) is stored separately and is never derived from any of this.
